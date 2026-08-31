@@ -3,9 +3,6 @@
     <img src="rag-protection-proxy/rag_protection_proxy/ui/static/marifort-company-badge.png" alt="Marifort" width="128" height="128" />
   </a>
 </p>
-<p align="center">
-  <img src="rag-protection-proxy/rag_protection_proxy/ui/static/logo-by-marifort-light.svg" alt="Marifort Gate by Marifort" width="280" />
-</p>
 
 # Marifort Gate (Community Edition)
 
