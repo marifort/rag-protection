@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://github.com/marifort">
+    <img src="rag_protection_proxy/ui/static/marifort-company-badge.png" alt="Marifort" width="96" height="96" />
+  </a>
+</p>
+
 # Marifort Gate (service)
 
 FastAPI service implementing secured RAG per [../docs/product/RAG_Protection.md](../docs/ce/README.md).
