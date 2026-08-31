@@ -1,0 +1,57 @@
+# Local kind overlay — match Docker EE Compose (compose.yml + compose.ee.yml).
+#
+# Do not put secrets here. extraEnvFrom only names Secret
+# rag-protection-compose-env. tools/helm_start.sh copies selected keys from
+# repo-root .env into that Secret (admin key, entitlements, Drive, JWT).
+# Non-secret knobs in this file (storeBackend, aclFile, llm, oidc flags)
+# become Deployment env: entries. Helm ignores .env RAG_STORE_BACKEND.
+# Host YAML is ConfigMap rag-protection-compose-config on /app/config.
+# Full prose (same folder, Cmd+click): KIND_HELM_ENV.md
+#
+# Usage (first time):
+#   bash tools/helm_start.sh
+# Image already built and kind-loaded:
+#   bash tools/helm_start.sh --no-build --no-load
+# Flags: tools/helm_start.sh --help  ·  docs/ee/runbooks/KIND_HELM_LOCAL.md#helm-start-flags
+#
+# Auth0 lives in config/acl_policy.yaml (same as Compose). Leave proxy.oidc
+# disabled here so env does not replace YAML issuer/audience/JWKS/UI client.
+
+image:
+  repository: rag-protection-proxy
+  tag: ee
+  pullPolicy: IfNotPresent
+
+proxy:
+  aclFile: /app/config/acl_policy.yaml
+  storeBackend: hybrid   # RAG_STORE_BACKEND; not read from .env on Helm
+  toolPolicyFile: /app/config/tool_policy.mcp.yaml
+  policyWritableFile: /data/policy.yaml
+  digestOutputDir: /data/digest
+  llm:
+    # Compose Model Runner binding uses /v1/ (not /engines/v1).
+    baseUrl: http://model-runner.docker.internal/v1/
+    model: ai/gemma3-qat
+    apiKey: not-needed
+  oidc:
+    enabled: false
+    issuer: ""
+    audience: ""
+    jwksUri: ""
+  extraEnvFrom:
+    # Names the Secret only. Keys: repo-root .env via helm_start.sh.
+    - secretRef:
+        name: rag-protection-compose-env
+
+config:
+  existingConfigMap: rag-protection-compose-config
+
+qdrant:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    memory: 2Gi

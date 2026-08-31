@@ -1,0 +1,34 @@
+venv/
+.venv/
+.venv-ce-only/
+.venv-ee-only/
+__pycache__/
+*.pyc
+.env
+.env.local
+.DS_Store
+dist/
+*.egg-info
+data/
+rag-protection-proxy/data/
+backups/
+tools/redteam/artifacts/
+
+# Enterprise Edition — private repo (see docs/commercial/PRIVATE_REPO_SPLIT.md)
+rag-protection-enterprise/
+
+# Founder local — compensation / clearance session; do not push to GitHub
+docs/commercial/internal/2026-08-20_CAREER_FALLBACK_NA_REMOTE.md
+
+# Founder local — personal resume / CV; contains contact details. Never push.
+docs/commercial/internal/RESUME_*.md
+
+# Founder local — personal career outreach (rates, availability). Never push.
+docs/commercial/internal/CAREER_*.md
+
+# Accidental / local artifacts — not either edition
+/node_modules/
+.cursor/debug-*.log
+.env.backup.*
+.public-ce-export/
+.github-account-migrate/

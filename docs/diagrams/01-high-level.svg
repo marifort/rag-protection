@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="630" viewBox="0 0 600 630">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="300" y="22" text-anchor="middle" class="title">High-Level Architecture</text>
+
+<rect x="20" y="40" width="560" height="70" class="group"/>
+<text x="30" y="58" class="small">Users and Operators</text>
+<rect x="40" y="68" width="200" height="32" class="user"/><text x="140" y="84" text-anchor="middle" class="label">Employee / HR / Executive</text><rect x="280" y="68" width="220" height="32" class="user"/><text x="390" y="84" text-anchor="middle" class="label">Operator Console /ui</text>
+<rect x="20" y="130" width="560" height="280" class="group"/>
+<text x="30" y="148" class="small">Marifort Gate (port 8090)</text>
+<rect x="220" y="160" width="160" height="28" class="box"/><text x="300" y="174" text-anchor="middle" class="label">ACL Resolution</text><line x1="300" y1="188" x2="300" y2="208" class="arrow"/><rect x="200" y="208" width="200" height="28" class="box"/><text x="300" y="222" text-anchor="middle" class="label">Pre-Retrieval ACL Filter</text><line x1="300" y1="236" x2="300" y2="256" class="arrow"/><rect x="190" y="256" width="220" height="32" class="store"/><text x="300" y="272" text-anchor="middle" class="label">SQLite Document Store</text><line x1="300" y1="288" x2="300" y2="308" class="arrow"/><rect x="200" y="308" width="200" height="28" class="box"/><text x="300" y="322" text-anchor="middle" class="label">Input Guardrails</text><line x1="300" y1="336" x2="300" y2="356" class="arrow"/><rect x="180" y="356" width="240" height="28" class="box"/><text x="300" y="370" text-anchor="middle" class="label">Context Isolation Builder</text>
+<rect x="20" y="430" width="560" height="70" class="group"/>
+<text x="30" y="448" class="small">LLM Backend</text>
+<rect x="140" y="460" width="160" height="28" class="llm"/><text x="220" y="474" text-anchor="middle" class="label">Docker Model Runner</text><line x1="300" y1="384" x2="220" y2="460" class="arrow"/><rect x="340" y="460" width="160" height="28" class="box"/><text x="420" y="474" text-anchor="middle" class="label">Citation Verifier</text><line x1="420" y1="488" x2="420" y2="520" class="arrow"/><rect x="340" y="520" width="160" height="28" class="box"/><text x="420" y="534" text-anchor="middle" class="label">Output Guardrails</text><line x1="420" y1="548" x2="300" y2="580" class="arrow"/><rect x="200" y="580" width="200" height="28" class="user"/><text x="300" y="594" text-anchor="middle" class="label">Secured Response to User</text><rect x="430" y="308" width="130" height="28" class="box"/><text x="495" y="322" text-anchor="middle" class="label">Audit Buffer</text><line x1="400" y1="322" x2="430" y2="322" class="arrow"/>
+</svg>

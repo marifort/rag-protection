@@ -1,0 +1,9 @@
+{
+  "id": "wiki-page-001",
+  "title": "Engineering Runbook",
+  "content": "Deploy steps for the RAG proxy. Rollback via helm upgrade.",
+  "permissions": [
+    {"group": "engineering"},
+    {"group": "all-staff", "public": false}
+  ]
+}

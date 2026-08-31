@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="320" y="22" text-anchor="middle" class="title">E1.3 — Query Verdict Banner</text>
+<rect x="200" y="50" width="200" height="32" class="user"/><text x="300" y="60" text-anchor="middle" class="label">Operator</text><text x="300" y="80" text-anchor="middle" class="small">Injection demo</text><line x1="300" y1="82" x2="300" y2="100" class="arrow"/><rect x="200" y="100" width="200" height="32" class="user"/><text x="300" y="116" text-anchor="middle" class="label">Query Lab UI</text><line x1="300" y1="132" x2="300" y2="150" class="arrow"/><rect x="170" y="150" width="260" height="32" class="box"/><text x="300" y="166" text-anchor="middle" class="label">POST /v1/query</text><line x1="300" y1="182" x2="300" y2="200" class="arrow"/><rect x="190" y="200" width="220" height="36" class="box"/><text x="300" y="212" text-anchor="middle" class="label">scan_input P1</text><text x="300" y="232" text-anchor="middle" class="small">user query</text><line x1="300" y1="236" x2="300" y2="254" class="arrow"/><rect x="215" y="254" width="170" height="36" class="box"/><text x="300" y="266" text-anchor="middle" class="label">BLOCK?</text><text x="300" y="286" text-anchor="middle" class="small">instruction_override</text>
+<text x="40" y="310" class="small">yes → query_guardrail_blocked (no store.search, no LLM)</text>
+<text x="40" y="328" class="small">UI verdict banner: query_verdict block + block_reason</text>
+<line x1="215" y1="272" x2="100" y2="295" class="arrow"/><rect x="30" y="295" width="150" height="32" class="box"/><text x="105" y="305" text-anchor="middle" class="label">Red banner</text><text x="105" y="325" text-anchor="middle" class="small">E1.3</text><line x1="385" y1="272" x2="470" y2="295" class="arrow"/><rect x="430" y="295" width="170" height="32" class="box"/><text x="515" y="305" text-anchor="middle" class="label">QueryResponse</text><text x="515" y="325" text-anchor="middle" class="small">chunks: []</text>
+</svg>

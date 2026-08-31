@@ -1,0 +1,8 @@
+{
+  "id": "hr-onboarding-001",
+  "title": "HR Onboarding Checklist",
+  "content": "New hires must complete security training within 7 days. Contact hr@company.com for badge access.",
+  "permissions": [
+    {"group": "hr"}
+  ]
+}

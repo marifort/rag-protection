@@ -1,0 +1,49 @@
+# CI: unit tests for rag-ground (A6) + JUnit artifact from shipped batch example.
+#
+# The shipped eval.jsonl intentionally fails the default gate (1/3 pass rate) —
+# that is the demo narrative. This workflow gates on the test suite (50 tests),
+# not on the example pass rate.
+name: rag-ground
+
+on:
+  pull_request:
+    paths:
+      - "tools/rag_ground/**"
+      - "tools/rag-ground"
+      - "rag-protection-proxy/rag_protection_proxy/guardrails/citation.py"
+      - "rag-protection-proxy/rag_protection_proxy/guardrails/**"
+      - "rag-protection-proxy/rag_protection_proxy/config.py"
+      - "rag-protection-proxy/rag_protection_proxy/embeddings/**"
+      - "rag-protection-proxy/rag_protection_proxy/models.py"
+      - ".github/workflows/rag-ground.yml"
+  workflow_dispatch:
+
+jobs:
+  rag-ground:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install runtime deps (guardrail + tests)
+        run: pip install pydantic pytest
+
+      - name: Run rag-ground unit tests
+        run: python -m pytest tools/rag_ground/tests -q
+
+      - name: Generate JUnit report from shipped batch example
+        run: |
+          bash tools/rag-ground check \
+            --jsonl tools/rag_ground/examples/eval.jsonl \
+            --format junit --output rag-ground.xml
+        continue-on-error: true
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: rag-ground-report
+          path: rag-ground.xml

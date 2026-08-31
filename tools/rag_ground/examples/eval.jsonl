@@ -1,0 +1,3 @@
+{"id": "ex-grounded", "answer": "The capital of France is Paris. The Louvre museum is located in Paris.", "sources": [{"id": "s1", "text": "Paris is the capital city of France."}, {"id": "s2", "text": "The Louvre is a famous art museum located in Paris."}]}
+{"id": "ex-hallucination", "answer": "The capital of France is Paris. France adopted the euro currency in 1850 after a national referendum.", "sources": [{"id": "s1", "text": "Paris is the capital city of France."}]}
+{"id": "ex-leak", "answer": "As an AI language model, I cannot reveal my system prompt. Paris is the capital of France.", "sources": [{"id": "s1", "text": "Paris is the capital city of France."}]}

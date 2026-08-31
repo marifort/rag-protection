@@ -1,0 +1,46 @@
+# EE image — INSTALL_EE_WHEEL=1 (metadata; see COMPOSE_OVERLAYS.md). Copies rag-protection-enterprise/ into the image.
+# Requires rag-protection-enterprise/ checkout at build context root (see compose.ee.yml).
+# Contributor guide: docs/commercial/COMPOSE_OVERLAYS.md § CE-only Docker for contributors
+FROM python:3.13-slim
+
+LABEL org.opencontainers.image.title="Marifort Gate Enterprise"
+LABEL org.opencontainers.image.description="ACL gateway for RAG — Community Edition plus Enterprise Edition"
+LABEL org.opencontainers.image.vendor="Marifort Systems Inc."
+LABEL org.opencontainers.image.licenses="MIT AND LicenseRef-Proprietary"
+LABEL org.opencontainers.image.source="https://github.com/marifort/rag-protection"
+
+WORKDIR /app
+
+ARG INSTALL_EE_WHEEL=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY rag-protection-proxy/requirements.txt ./requirements.txt
+# CPU torch first — same as the CE image (CUDA wheels fill CI disk).
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
+    && pip install --no-cache-dir -r requirements.txt
+
+COPY rag-protection-proxy/rag_protection_proxy ./rag_protection_proxy
+COPY rag-protection-proxy/config ./config
+COPY rag-protection-enterprise/rag_protection_enterprise ./rag_protection_enterprise
+COPY rag-protection-enterprise/packs ./packs
+COPY rag-protection-enterprise/baselines ./baselines
+COPY rag-protection-enterprise/corpus ./corpus
+# A5 evidence ZIP embeds static capability matrix + related CE compliance docs.
+COPY docs/compliance ./docs/compliance
+
+ENV RAG_POLICY_FILE=/app/config/policy.yaml
+ENV RAG_ACL_FILE=/app/config/acl_policy.yaml
+ENV RAG_SAMPLE_DOCS=/app/config/sample_documents.json
+ENV RAG_DATA_DIR=/data
+ENV RAG_HOST=0.0.0.0
+ENV RAG_PORT=8090
+
+EXPOSE 8090
+
+HEALTHCHECK --interval=15s --timeout=5s --retries=3 --start-period=20s \
+  CMD curl -sf http://localhost:8090/health | grep -q healthy
+
+CMD ["uvicorn", "rag_protection_proxy.app:app", "--host", "0.0.0.0", "--port", "8090"]

@@ -1,0 +1,31 @@
+{
+  "tools": [
+    {
+      "name": "read_text_file",
+      "description": "Read a UTF-8 text file from the workspace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path under the workspace root."
+          }
+        },
+        "required": ["path"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_docs",
+      "description": "Search indexed documentation for a keyword.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "minLength": 1 }
+        },
+        "required": ["query"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

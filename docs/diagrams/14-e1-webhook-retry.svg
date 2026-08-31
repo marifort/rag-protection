@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="406" viewBox="0 0 640 406">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="320" y="22" text-anchor="middle" class="title">E1.4 — Webhook Retry + Dead Letter</text>
+<rect x="200" y="50" width="240" height="36" class="box"/><text x="320" y="68" text-anchor="middle" class="label">record event</text><line x1="320" y1="86" x2="320" y2="98" class="arrow"/><rect x="200" y="98" width="240" height="36" class="box"/><text x="320" y="116" text-anchor="middle" class="label">async thread</text><line x1="320" y1="134" x2="320" y2="146" class="arrow"/><rect x="200" y="146" width="240" height="36" class="box"/><text x="320" y="164" text-anchor="middle" class="label">POST attempt 1</text><line x1="320" y1="182" x2="320" y2="194" class="arrow"/><rect x="200" y="194" width="240" height="36" class="box"/><text x="320" y="212" text-anchor="middle" class="label">backoff sleep</text><line x1="320" y1="230" x2="320" y2="242" class="arrow"/><rect x="200" y="242" width="240" height="36" class="box"/><text x="320" y="260" text-anchor="middle" class="label">POST attempt 2</text><line x1="320" y1="278" x2="320" y2="290" class="arrow"/><rect x="200" y="290" width="240" height="36" class="box"/><text x="320" y="308" text-anchor="middle" class="label">POST attempt 3</text><line x1="320" y1="326" x2="320" y2="338" class="arrow"/><rect x="200" y="338" width="240" height="36" class="box"/><text x="320" y="350" text-anchor="middle" class="label">dead-letter file</text><text x="320" y="370" text-anchor="middle" class="small">if all fail</text>
+<text x="460" y="95" class="small">fail → retry (default 3x)</text>
+<text x="460" y="185" class="small">JSONL sink written regardless</text>
+<text x="460" y="290" class="small">RAG_AUDIT_DEAD_LETTER_FILE optional</text>
+
+</svg>

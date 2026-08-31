@@ -1,0 +1,11 @@
+{
+  "id": "unmapped-doc-001",
+  "name": "Unmapped Permissions Doc",
+  "content": "Should be invisible to all users when ACL mapping fails (fail-closed).",
+  "permissions": [
+    { "type": "user", "emailAddress": "unknown@other.com", "role": "reader" }
+  ],
+  "group_map": {
+    "hr@company.com": "hr"
+  }
+}

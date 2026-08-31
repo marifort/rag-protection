@@ -1,0 +1,21 @@
+default_groups:
+  - "*"
+
+jwt_groups_claim: groups
+jwt_secret: ""
+
+oidc:
+  enabled: false
+
+demo_users:
+  - token: employee-demo-token
+    subject: alice.engineer
+    groups:
+      - engineering
+      - all-staff
+
+admin_users:
+  - token: rag-admin-demo-key
+    subject: admin.demo
+    roles:
+      - policy_admin

@@ -1,0 +1,13 @@
+version: 1
+input:
+  challenge_threshold: 0.4
+  block_threshold: 0.8
+  challenge_mode: block
+connectors:
+  enabled: true
+  unmapped_permissions: deny
+  jobs:
+    - connector: google_drive
+      source_id: "folder-123"
+      group_map:
+        "drive-eng": "engineering"

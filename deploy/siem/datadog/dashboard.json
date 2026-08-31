@@ -1,0 +1,58 @@
+{
+  "title": "RAG Protection — Security Overview",
+  "description": "Lab 3 SIEM pack — mirrors E5.8 operator stats. Wire log pipeline first (deploy/siem/datadog/log_pipeline.json).",
+  "widgets": [
+    {
+      "definition": {
+        "title": "Audit events by kind (24h)",
+        "type": "timeseries",
+        "requests": [
+          {
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "by_kind",
+                "search": {"query": "@rag.kind:*"},
+                "indexes": ["*"],
+                "compute": {"aggregation": "count"},
+                "group_by": [{"facet": "@rag.kind", "limit": 20}]
+              }
+            ],
+            "response_format": "timeseries"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Blocks by decision",
+        "type": "toplist",
+        "requests": [
+          {
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "blocks",
+                "search": {"query": "@rag.decision:block"},
+                "indexes": ["*"],
+                "compute": {"aggregation": "count"},
+                "group_by": [{"facet": "@rag.kind", "limit": 15}]
+              }
+            ],
+            "response_format": "scalar"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Extraction + canary (7d)",
+        "type": "log_stream",
+        "query": "@rag.kind:(extraction_suspected OR canary_triggered)",
+        "columns": ["@timestamp", "@rag.kind", "@usr.id", "@rag.tenant_id", "@message"]
+      }
+    }
+  ],
+  "layout_type": "ordered",
+  "notify_list": []
+}

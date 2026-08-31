@@ -1,0 +1,90 @@
+# Two-proxy LAN demo (Docker Compose, no Kubernetes).
+#
+# nginx listens on ${RAG_PORT:-8090} and load-balances to proxy-a / proxy-b.
+# Shared Qdrant. Per-replica /data (no sqlite, no audit JSONL).
+# Not E4.2 HA — same limits as values-ha-demo.yaml.
+#
+#   bash tools/docker_ha_demo_start.sh          # CE (default)
+#   bash tools/docker_ha_demo_start.sh --ee     # EE image + package mounts
+#   bash tools/docker_ha_demo_smoke.sh
+#   bash tools/docker_ha_demo_failover.sh
+#   bash tools/docker_ha_demo_stop.sh           # add --ee if you started with --ee
+#
+# Stop the single-replica stack first if it owns :8090:
+#   bash tools/docker_stop.sh --qdrant          # CE
+#   bash tools/docker_stop.sh --ee --qdrant     # EE
+
+x-ha-proxy: &ha-proxy
+  restart: unless-stopped
+  env_file:
+    - .env
+  environment:
+    RAG_POLICY_FILE: /app/config/policy.yaml
+    RAG_ACL_FILE: /app/config/acl_policy.yaml
+    RAG_SAMPLE_DOCS: /app/config/sample_documents.json
+    RAG_DATA_DIR: /data
+    RAG_POLICY_WRITABLE_FILE: /data/policy.yaml
+    RAG_STORE_BACKEND: vector
+    RAG_QDRANT_URL: http://qdrant:6333
+    RAG_QDRANT_COLLECTION: ${RAG_QDRANT_COLLECTION:-rag_chunks}
+    RAG_AUDIT_FILE: ""
+    RAG_AUDIT_DEAD_LETTER_FILE: ""
+    RAG_AUDIT_WEBHOOK_URL: ${RAG_AUDIT_WEBHOOK_URL:-}
+    RAG_DIGEST_OUTPUT_DIR: /data/digest
+    RAG_LLM_BASE_URL: ${RAG_LLM_BASE_URL:-http://model-runner.docker.internal/engines/v1}
+    RAG_LLM_MODEL: ${RAG_LLM_MODEL:-ai/gemma3-qat}
+    RAG_LLM_API_KEY: not-needed
+    RAG_LOG_LEVEL: ${RAG_LOG_LEVEL:-INFO}
+    RAG_ADMIN_API_KEY: ${RAG_ADMIN_API_KEY:-rag-admin-demo-key}
+  depends_on:
+    qdrant:
+      condition: service_started
+      required: true
+  healthcheck:
+    test: ["CMD-SHELL", "curl -sf http://localhost:8090/health | grep -q healthy"]
+    interval: 15s
+    timeout: 5s
+    retries: 5
+    start_period: 40s
+
+services:
+  # Hide the single-replica service so it does not bind :8090.
+  rag-protection-proxy:
+    profiles: ["ha-demo-unused"]
+    ports: !override []
+
+  rag-protection-proxy-a:
+    <<: *ha-proxy
+    image: rag-protection-proxy:latest
+    container_name: rag-protection-proxy-a
+    volumes:
+      - ha-demo-a-data:/data
+      - ./rag-protection-proxy/config:/app/config:ro
+      - ./rag-protection-proxy/rag_protection_proxy:/app/rag_protection_proxy:ro
+
+  rag-protection-proxy-b:
+    <<: *ha-proxy
+    image: rag-protection-proxy:latest
+    container_name: rag-protection-proxy-b
+    volumes:
+      - ha-demo-b-data:/data
+      - ./rag-protection-proxy/config:/app/config:ro
+      - ./rag-protection-proxy/rag_protection_proxy:/app/rag_protection_proxy:ro
+
+  rag-protection-lb:
+    image: nginx:1.27-alpine
+    container_name: rag-protection-lb
+    restart: unless-stopped
+    ports:
+      - "${RAG_PORT:-8090}:8090"
+    volumes:
+      - ./deploy/compose/ha-demo/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      rag-protection-proxy-a:
+        condition: service_healthy
+      rag-protection-proxy-b:
+        condition: service_healthy
+
+volumes:
+  ha-demo-a-data:
+  ha-demo-b-data:

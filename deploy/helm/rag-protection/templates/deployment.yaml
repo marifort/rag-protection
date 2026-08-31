@@ -1,0 +1,157 @@
+{{- include "rag-protection.validate" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rag-protection.fullname" . }}
+  labels:
+    {{- include "rag-protection.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "rag-protection.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "rag-protection.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: proxy
+    spec:
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: proxy
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8090
+              protocol: TCP
+          {{- with .Values.proxy.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: RAG_POLICY_FILE
+              value: {{ .Values.proxy.policyFile | quote }}
+            - name: RAG_ACL_FILE
+              value: {{ .Values.proxy.aclFile | quote }}
+            - name: RAG_SAMPLE_DOCS
+              value: {{ .Values.proxy.sampleDocs | quote }}
+            - name: RAG_DATA_DIR
+              value: {{ .Values.persistence.mountPath | quote }}
+            - name: RAG_POLICY_WRITABLE_FILE
+              value: {{ .Values.proxy.policyWritableFile | quote }}
+            - name: RAG_DIGEST_OUTPUT_DIR
+              value: {{ .Values.proxy.digestOutputDir | quote }}
+            - name: RAG_STORE_BACKEND
+              value: {{ .Values.proxy.storeBackend | quote }}
+            - name: RAG_QDRANT_URL
+              value: {{ include "rag-protection.qdrantUrl" . | quote }}
+            - name: RAG_QDRANT_COLLECTION
+              value: {{ .Values.proxy.qdrantCollection | quote }}
+            - name: RAG_LLM_BASE_URL
+              value: {{ .Values.proxy.llm.baseUrl | quote }}
+            - name: RAG_LLM_MODEL
+              value: {{ .Values.proxy.llm.model | quote }}
+            - name: RAG_LLM_API_KEY
+              value: {{ .Values.proxy.llm.apiKey | quote }}
+            - name: RAG_LOG_LEVEL
+              value: {{ .Values.proxy.logLevel | quote }}
+            - name: RAG_ADMIN_API_KEY
+              value: {{ .Values.proxy.adminApiKey | quote }}
+            - name: RAG_AUDIT_FILE
+              value: {{ .Values.proxy.audit.file | quote }}
+            - name: RAG_AUDIT_WEBHOOK_URL
+              value: {{ .Values.proxy.audit.webhookUrl | quote }}
+            - name: RAG_AUDIT_WEBHOOK_TIMEOUT
+              value: {{ .Values.proxy.audit.webhookTimeout | quote }}
+            - name: RAG_AUDIT_WEBHOOK_RETRIES
+              value: {{ .Values.proxy.audit.webhookRetries | quote }}
+            - name: RAG_AUDIT_DEAD_LETTER_FILE
+              value: {{ .Values.proxy.audit.deadLetterFile | quote }}
+            - name: RAG_OIDC_ENABLED
+              value: {{ ternary "true" "false" .Values.proxy.oidc.enabled | quote }}
+            - name: RAG_OIDC_ISSUER
+              value: {{ .Values.proxy.oidc.issuer | quote }}
+            - name: RAG_OIDC_AUDIENCE
+              value: {{ .Values.proxy.oidc.audience | quote }}
+            - name: RAG_OIDC_JWKS_URI
+              value: {{ .Values.proxy.oidc.jwksUri | quote }}
+            {{- if .Values.proxy.toolPolicyFile }}
+            - name: RAG_TOOL_POLICY_FILE
+              value: {{ .Values.proxy.toolPolicyFile | quote }}
+            {{- end }}
+            {{- if .Values.proxy.eeEntitlements }}
+            - name: RAG_EE_ENTITLEMENTS
+              value: {{ .Values.proxy.eeEntitlements | quote }}
+            {{- end }}
+            {{- if .Values.proxy.google.clientId }}
+            - name: RAG_GOOGLE_CLIENT_ID
+              value: {{ .Values.proxy.google.clientId | quote }}
+            {{- end }}
+            {{- if .Values.proxy.google.clientSecret }}
+            - name: RAG_GOOGLE_CLIENT_SECRET
+              value: {{ .Values.proxy.google.clientSecret | quote }}
+            {{- end }}
+            {{- if .Values.proxy.google.redirectUri }}
+            - name: RAG_GOOGLE_REDIRECT_URI
+              value: {{ .Values.proxy.google.redirectUri | quote }}
+            {{- end }}
+            {{- range .Values.proxy.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- if .Values.config.existingConfigMap }}
+            {{- range .Values.config.mounts }}
+            - name: compose-config
+              mountPath: /app/config/{{ . }}
+              subPath: {{ . }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "rag-protection.fullname" . }}-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.config.existingConfigMap }}
+        - name: compose-config
+          configMap:
+            name: {{ .Values.config.existingConfigMap | quote }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

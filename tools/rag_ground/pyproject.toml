@@ -1,0 +1,43 @@
+# Standalone packaging for the rag-ground grounding checker (A6, lead-gen asset).
+#
+# Install from this directory:
+#   pip install -e tools/rag_ground            # editable, for development
+#   pip install tools/rag_ground               # wheel/sdist build
+# This installs the `rag-ground` console script (entry point below).
+#
+# rag-ground wraps the shipped output guardrail
+# `rag_protection_proxy.guardrails.citation.verify_citations`. When run from a
+# checkout, the proxy is found on PYTHONPATH automatically via the
+# `tools/rag-ground` wrapper (and the package's _bootstrap shim); for an
+# out-of-tree install, also install the proxy (`pip install -e rag-protection-proxy`).
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-ground"
+version = "0.1.0"
+description = "Grounding / hallucination check — score an LLM answer against its source chunks (wraps the shipped citation guardrail)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["rag", "grounding", "hallucination", "citation", "llm-eval", "lead-gen"]
+# No PyPI runtime deps of its own: it reuses the proxy's verify_citations, which
+# pulls pydantic via rag-protection-proxy. Install the proxy alongside it.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.0"]
+
+[project.scripts]
+rag-ground = "rag_ground.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/marifort/rag-protection"
+Documentation = "https://github.com/marifort/rag-protection/blob/main/tools/rag_ground/README.md"
+
+# The package directory IS this directory; map the import name onto it and list
+# sub-packages explicitly so the test suite is not shipped in the wheel.
+[tool.setuptools]
+package-dir = { "rag_ground" = "." }
+packages = ["rag_ground"]

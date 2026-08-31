@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="380" viewBox="0 0 800 380">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="400" y="22" text-anchor="middle" class="title">E1 — Operator Architecture</text>
+
+<rect x="20" y="40" width="760" height="72" class="group"/><text x="30" y="58" class="small">Operator Console /ui (E1.1–E1.3)</text>
+<rect x="30" y="62" width="155" height="36" class="box"/><text x="107" y="74" text-anchor="middle" class="label">Query Lab</text><text x="107" y="94" text-anchor="middle" class="small">Injection demo</text><line x1="185" y1="80" x2="213" y2="80" class="arrow"/><rect x="213" y="62" width="155" height="36" class="box"/><text x="290" y="74" text-anchor="middle" class="label">Documents</text><text x="290" y="94" text-anchor="middle" class="small">Quarantine queue</text><line x1="368" y1="80" x2="396" y2="80" class="arrow"/><rect x="396" y="62" width="155" height="36" class="box"/><text x="473" y="74" text-anchor="middle" class="label">Audit Log</text><text x="473" y="94" text-anchor="middle" class="small">NDJSON export</text><line x1="551" y1="80" x2="579" y2="80" class="arrow"/><rect x="579" y="62" width="155" height="36" class="box"/><text x="656" y="74" text-anchor="middle" class="label">Policy Viewer/Admin</text><text x="656" y="94" text-anchor="middle" class="small">reload</text>
+<rect x="20" y="130" width="760" height="72" class="group"/><text x="30" y="148" class="small">Admin API</text>
+<rect x="30" y="152" width="155" height="36" class="box"/><text x="107" y="164" text-anchor="middle" class="label">GET quarantined</text><text x="107" y="184" text-anchor="middle" class="small">E1.1</text><line x1="185" y1="170" x2="213" y2="170" class="arrow"/><rect x="213" y="152" width="155" height="36" class="box"/><text x="290" y="164" text-anchor="middle" class="label">POST approve</text><text x="290" y="184" text-anchor="middle" class="small">E1.1</text><line x1="368" y1="170" x2="396" y2="170" class="arrow"/><rect x="396" y="152" width="155" height="36" class="box"/><text x="473" y="164" text-anchor="middle" class="label">GET audit/export</text><text x="473" y="184" text-anchor="middle" class="small">E1.2</text><line x1="551" y1="170" x2="579" y2="170" class="arrow"/><rect x="579" y="152" width="155" height="36" class="box"/><text x="656" y="170" text-anchor="middle" class="label">POST reload-policy</text>
+<rect x="20" y="220" width="360" height="100" class="group"/><text x="30" y="238" class="small">Guardrail pipeline (existing)</text>
+<rect x="40" y="252" width="140" height="36" class="box"/><text x="110" y="270" text-anchor="middle" class="label">P1 query scan</text><rect x="200" y="252" width="140" height="36" class="box"/><text x="270" y="270" text-anchor="middle" class="label">P1 ingest scan</text>
+<rect x="400" y="220" width="380" height="100" class="group"/><text x="410" y="238" class="small">E1.4 audit sinks</text>
+<rect x="420" y="252" width="90" height="36" class="box"/><text x="465" y="270" text-anchor="middle" class="label">Buffer</text><rect x="520" y="252" width="90" height="36" class="store"/><text x="565" y="270" text-anchor="middle" class="label">JSONL</text><rect x="620" y="252" width="90" height="36" class="box"/><text x="665" y="264" text-anchor="middle" class="label">Webhook</text><text x="665" y="284" text-anchor="middle" class="small">3x retry</text><rect x="720" y="252" width="50" height="36" class="box"/><text x="745" y="270" text-anchor="middle" class="label">DLQ</text>
+<text x="40" y="340" class="small">Query Lab → P1 scan → query_guardrail_blocked → verdict banner</text>
+<text x="40" y="358" class="small">Documents → ingest → quarantine → Approve → active corpus</text>
+
+</svg>

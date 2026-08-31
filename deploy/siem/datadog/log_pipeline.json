@@ -1,0 +1,70 @@
+{
+  "name": "RAG Protection audit log pipeline",
+  "description": "Map NDJSON AuditEvent fields from RAG Protection webhook or file forwarder (Lab 3 SIEM pack).",
+  "filter": {
+    "query": "@message:*\"kind\"* OR source:rag_protection"
+  },
+  "processors": [
+    {
+      "name": "Parse AuditEvent JSON",
+      "enabled": true,
+      "type": "grok-parser",
+      "definition": {
+        "grok": {
+          "matchRules": "audit %{data::json}"
+        },
+        "source": "message"
+      }
+    },
+    {
+      "name": "Map standard attributes",
+      "enabled": true,
+      "type": "attribute-remapper",
+      "definition": {
+        "sources": ["kind"],
+        "target": "rag.kind",
+        "preserveSource": true
+      }
+    },
+    {
+      "name": "Map decision",
+      "enabled": true,
+      "type": "attribute-remapper",
+      "definition": {
+        "sources": ["decision"],
+        "target": "rag.decision",
+        "preserveSource": true
+      }
+    },
+    {
+      "name": "Map subject",
+      "enabled": true,
+      "type": "attribute-remapper",
+      "definition": {
+        "sources": ["subject"],
+        "target": "usr.id",
+        "preserveSource": true
+      }
+    },
+    {
+      "name": "Map tenant",
+      "enabled": true,
+      "type": "attribute-remapper",
+      "definition": {
+        "sources": ["tenant_id"],
+        "target": "rag.tenant_id",
+        "preserveSource": true
+      }
+    },
+    {
+      "name": "Map risk score",
+      "enabled": true,
+      "type": "attribute-remapper",
+      "definition": {
+        "sources": ["risk_score"],
+        "target": "rag.risk_score",
+        "preserveSource": true
+      }
+    }
+  ]
+}

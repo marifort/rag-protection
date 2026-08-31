@@ -1,0 +1,24 @@
+{
+  "hr-payroll": [
+    {"type": "user", "emailAddress": "bob.hr@corp.com", "role": "reader"},
+    {"type": "user", "emailAddress": "carol.exec@corp.com", "role": "reader"}
+  ],
+  "eng-runbook": [
+    {"type": "user", "emailAddress": "alice.engineer@corp.com", "role": "reader"}
+  ],
+  "exec-strategy": [
+    {"type": "user", "emailAddress": "bob.hr@corp.com", "role": "reader"},    
+    {"type": "user", "emailAddress": "carol.exec@corp.com", "role": "reader"}
+  ],
+  "public-faq": [
+    {"type": "anyone", "role": "reader"},
+    {"type": "user", "emailAddress": "staff-share@corp.com", "role": "reader"}
+  ],
+  "customer-feedback-poisoned": [
+    {"type": "anyone", "role": "reader"},
+    {"type": "user", "emailAddress": "staff-share@corp.com", "role": "reader"}
+  ],
+  "drive-unmapped-secret": [
+    {"type": "user", "emailAddress": "contractor@vendor.io", "role": "reader"}
+  ]
+}

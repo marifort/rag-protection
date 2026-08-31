@@ -1,0 +1,157 @@
+version: 1
+audit:
+  retention_days: 7
+  backup_keep_days: 7
+  scrub_export: true
+  max_export_rows: 5000
+  debug_mode: false
+  debug_max_preview_chars: 500
+  debug_retention_hours: 24
+  debug_webhook: false
+  integrity_chain: true
+  sample_by_kind:
+    connector_sync:
+      when_decision:
+      - allow
+      keep_every: 0
+    acl_sync:
+      when_decision:
+      - allow
+      keep_every: 0
+  retention_by_kind:
+    connector_sync: 3
+    acl_sync: 7
+    permission_drift: 90
+    canary_triggered: 90
+    extraction_suspected: 90
+  retain_decisions:
+    block: 90
+    challenge: 30
+tenant:
+  quotas:
+    queries_per_minute: 20
+    burst: 5
+dlp:
+  enable_ner: false
+  labels:
+  - PCI
+  - PHI
+  custom_patterns:
+  - name: employee_id
+    regex: \bEMP-\d{6}\b
+    replacement: '[REDACTED_EMP_ID]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: INTERNAL
+input:
+  challenge_threshold: 0.4
+  block_threshold: 0.71
+  challenge_mode: allow
+  strip_hidden_chars: true
+  strip_html_comments: true
+  redact_pii: true
+  redact_secrets: true
+  ml_injection_enabled: true
+  ml_injection_threshold: 0.72
+  injection_categories:
+    instruction_override: true
+    role_hijack: true
+    fake_system_prompt: true
+    chat_template_injection: true
+    exfiltration_directive: true
+    destructive_action: true
+    secret_extraction: true
+    pii_exfiltration: true
+    obfuscated_payload: true
+    hidden_chars: true
+    html_comment_injection: true
+    markdown_js_link: true
+    base64_payload: true
+  custom_injection_patterns: []
+output:
+  challenge_threshold: 0.5
+  block_threshold: 0.85
+  challenge_mode: audit_only
+  min_citation_coverage: 0.15
+  block_system_prompt_leak: true
+  per_claim_citations: true
+  hard_citation_gate: true
+  substantive_min_tokens: 4
+  entailment_check: false
+  entailment_threshold: 0.6
+network:
+  allowed_domains:
+  - docs.example.com
+  - cdn.trusted.example
+  denied_domains:
+  - evil.example
+  - phish.test
+  block_private_ranges: false
+llm:
+  base_url: http://model-runner.docker.internal/engines/v1
+  model: ai/gemma3-qat
+  api_key: not-needed
+  timeout_seconds: 90
+  max_tokens: 512
+  temperature: 0.2
+llm_routing:
+  enabled: false
+  fail_closed: true
+  default_endpoint_id: default
+  classification_rank:
+  - highly-confidential
+  - confidential-hr
+  - confidential
+  - internal-engineering
+  - internal
+  - public-support
+  - public
+  endpoints:
+    default: {}
+    eu-onprem:
+      base_url: http://llm-eu.internal.example/v1
+      model: hr-onprem
+      api_key: not-needed
+    us-saas:
+      base_url: http://llm-us.saas.example/v1
+      model: public-faq
+      api_key: not-needed
+  routes:
+  - match: highly-confidential
+    endpoint_id: eu-onprem
+  - match: confidential
+    endpoint_id: eu-onprem
+  - match: public
+    endpoint_id: us-saas
+canary:
+  enabled: true
+  auditor_subjects:
+  - auditor-bot
+  auditor_groups:
+  - security
+  output_backstop: false
+  default_sensitivity: confidential
+extraction:
+  enabled: true
+  window_seconds: 3600
+  min_window_queries: 8
+  min_corpus_size: 50
+  elevated_coverage: 0.15
+  severe_coverage: 0.30
+  breadth_ratio_threshold: 0.6
+  novelty_ratio_threshold: 0.7
+  action: challenge
+retrieval:
+  explainability_enabled: true
+  max_trace_candidates: 75
+connectors:
+  drift:
+    enabled: true
+    critical_if_public: true
+    critical_group_count: 3
+    auto_quarantine_on_critical: true
+  acl_sync:
+    enabled: true
+    min_interval_minutes: 2
+    acl_only_when_unchanged: false

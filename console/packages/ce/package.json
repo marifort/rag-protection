@@ -1,0 +1,33 @@
+{
+  "name": "@rag-protection/console-ce",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Marifort Systems Inc. <support@marifort.com>",
+  "type": "module",
+  "description": "Marifort Gate CE operator console (Overview, Query Lab, Documents & Ingest, Tool Gateway, Audit Log)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@rag-protection/console-core": "0.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.0.5"
+  }
+}

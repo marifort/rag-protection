@@ -1,0 +1,12 @@
+Marifort Gate — grounding check (batch)
+
+Pass rate: 1/3 (0.33)  threshold 0.75  min-pass-rate 1.00 -> FAIL
+System-prompt leaks: 1
+
+Items:
+  [1] grounded   coverage 1.00  id=ex-grounded
+  [2] ungrounded coverage 0.50  id=ex-hallucination
+  [3] leak       coverage 0.00  id=ex-leak
+
+---
+Measures grounding in the supplied context, not factual correctness of that context. Indicative gate, not a hallucination guarantee. Runs entirely locally — no answer or source text is uploaded.

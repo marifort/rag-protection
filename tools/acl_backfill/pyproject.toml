@@ -1,0 +1,35 @@
+# Standalone packaging for acl-backfill (A4, consulting / migration CLI).
+#
+# Install from this directory:
+#   pip install -e tools/acl_backfill
+#
+# Requires the EE package on PYTHONPATH (connectors.acl_mapping) and, for live
+# backends, qdrant-client and/or the pgvector store deps.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acl-backfill"
+version = "0.1.0"
+description = "Vector ACL backfill — patch allowed_groups on existing collections without re-embedding."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["rag", "acl", "qdrant", "pgvector", "migration", "workshop"]
+dependencies = ["pyyaml>=6.0.2"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.0"]
+qdrant = ["qdrant-client>=1.9.0"]
+
+[project.scripts]
+acl-backfill = "acl_backfill.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/marifort/rag-protection"
+Documentation = "https://github.com/marifort/rag-protection/blob/main/tools/acl_backfill/README.md"
+
+[tool.setuptools]
+package-dir = { "acl_backfill" = "." }
+packages = ["acl_backfill"]

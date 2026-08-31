@@ -1,0 +1,29 @@
+title = "Marifort Gate"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Demo tokens, fixtures, docs, and tests — not production secrets"
+paths = [
+  '''(^|/)\.gitleaks\.toml$''',
+  '''(^|/)docs/''',
+  '''(^|/)examples/''',
+  '''(^|/)config/''',
+  '''(^|/)tests/''',
+  '''(^|/)tools/.*/tests/''',
+  '''(^|/)console/.+\.test\.(ts|tsx)$''',
+  '''acl_policy\.ya?ml$''',
+  '''tool_policy''',
+  '''sample_documents''',
+]
+regexes = [
+  '''(?i)demo[-_](token|key)''',
+  '''rag-admin-demo''',
+  '''rag-audit-(reader|debug)''',
+  '''rag-ingest-admin''',
+  '''rag-policy-admin''',
+  '''employee-demo''',
+  '''hr-demo-token''',
+  '''exec-demo-token''',
+]

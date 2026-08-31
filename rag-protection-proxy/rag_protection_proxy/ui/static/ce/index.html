@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        var theme = localStorage.getItem('ragProtectionUiTheme');
+        if (!theme && window.matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+        if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      })();
+    </script>
+    <link rel="icon" href="/ui/static/favicon.svg" type="image/svg+xml" />
+    <title>Marifort Gate</title>
+    <!-- rag-protection-ui-build: ce-v1 -->
+    <script type="module" crossorigin src="/ui/static/ce/assets/index-K-JzmJNW.js"></script>
+    <link rel="stylesheet" crossorigin href="/ui/static/ce/assets/index-DibiQorV.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

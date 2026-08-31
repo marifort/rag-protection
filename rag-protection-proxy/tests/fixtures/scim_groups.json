@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "user": "alice.engineer",
+      "groups": ["scim-engineering", "all-staff"]
+    },
+    {
+      "user": "bob.hr",
+      "groups": ["scim-hr"]
+    }
+  ]
+}

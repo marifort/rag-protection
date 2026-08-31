@@ -1,0 +1,18 @@
+{
+  "hr-payroll-2024": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "eng-handbook": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "public-faq": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "legacy-notes": {
+    "allowed_groups": ["all-staff"],
+    "metadata": {}
+  }
+}

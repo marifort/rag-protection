@@ -1,0 +1,15 @@
+version: 1
+input:
+  challenge_threshold: 0.2
+  block_threshold: 0.3
+  challenge_mode: allow
+  ml_injection_enabled: false
+  injection_categories:
+    instruction_override: false
+    exfiltration_directive: false
+connectors:
+  enabled: true
+  unmapped_permissions: all_staff
+  jobs:
+    - connector: google_drive
+      source_id: "folder-123"

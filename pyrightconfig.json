@@ -1,0 +1,4 @@
+{
+  "include": ["examples", "rag-protection-proxy"],
+  "extraPaths": ["examples"]
+}

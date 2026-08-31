@@ -1,0 +1,52 @@
+# GitHub Actions live-stack job and Compose without Docker Model Runner.
+# Standalone — not an overlay of compose.yml.
+#
+# Default compose.yml uses Docker Model Runner (`models:`). Hosted runners
+# and Docker Engine without the plugin fail with:
+#   'models' support requires Docker Model plugin
+#
+#   docker compose -f compose.ci.yml up -d --build --wait
+#
+# CI leaves RAG_LLM_* unset so the proxy fail-fasts to 127.0.0.1:9 (ACL/chunk
+# tests still run). For a local BYO LLM, set RAG_LLM_BASE_URL / RAG_LLM_MODEL
+# in .env (host LLM: host.docker.internal, not localhost).
+
+name: rag-protection-ci
+
+services:
+  rag-protection-proxy:
+    build:
+      context: .
+      dockerfile: rag-protection-proxy/Dockerfile
+      args:
+        INSTALL_EE_WHEEL: "0"
+    image: rag-protection-proxy:ci
+    container_name: rag-protection-proxy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8090:8090"
+    environment:
+      RAG_POLICY_FILE: /app/config/policy.yaml
+      RAG_ACL_FILE: /app/config/acl_policy.yaml
+      RAG_SAMPLE_DOCS: /app/config/sample_documents.json
+      RAG_DATA_DIR: /data
+      RAG_POLICY_WRITABLE_FILE: /data/policy.yaml
+      RAG_STORE_BACKEND: sqlite
+      RAG_OIDC_ENABLED: "false"
+      RAG_LLM_BASE_URL: ${RAG_LLM_BASE_URL:-http://127.0.0.1:9}
+      RAG_LLM_MODEL: ${RAG_LLM_MODEL:-ci-no-llm}
+      RAG_LLM_API_KEY: ${RAG_LLM_API_KEY:-not-needed}
+      RAG_LOG_LEVEL: INFO
+      RAG_ADMIN_API_KEY: rag-admin-demo-key
+      RAG_AUDIT_FILE: /data/audit.jsonl
+      RAG_DIGEST_OUTPUT_DIR: /data/digest
+    volumes:
+      - ./data:/data
+      - ./rag-protection-proxy/config:/app/config:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8090/health | grep -q healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 90s

@@ -1,0 +1,38 @@
+# Standalone packaging for the rag-injbench injection benchmark (A7, lead-gen asset).
+#
+# Install from this directory:
+#   pip install -e tools/inj_bench
+#   pip install tools/inj_bench
+#
+# rag-injbench wraps the shipped PromptInjectionScanner and MLInjectionScanner.
+# When run from a checkout, the proxy is found via tools/rag-injbench and _bootstrap.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-injbench"
+version = "0.1.0"
+description = "Prompt-injection benchmark — score a filter against a labeled corpus (wraps shipped injection scanners)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["rag", "prompt-injection", "benchmark", "regression", "security", "lead-gen"]
+dependencies = ["pyyaml>=6.0.2"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.0"]
+
+[project.scripts]
+rag-injbench = "inj_bench.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/marifort/rag-protection"
+Documentation = "https://github.com/marifort/rag-protection/blob/main/tools/inj_bench/README.md"
+
+[tool.setuptools]
+package-dir = { "inj_bench" = "." }
+packages = ["inj_bench"]
+
+[tool.setuptools.package-data]
+inj_bench = ["corpus/*.yaml", "baseline/*.json"]

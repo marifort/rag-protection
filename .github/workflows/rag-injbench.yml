@@ -1,0 +1,56 @@
+# CI: unit tests for rag-injbench (A7) + baseline regression gate on shipped scanners.
+#
+# Gates on the test suite and committed baseline (detection/FP metrics). JUnit
+# report is uploaded for PR visibility.
+name: rag-injbench
+
+on:
+  pull_request:
+    paths:
+      - "tools/inj_bench/**"
+      - "tools/rag-injbench"
+      - "rag-protection-proxy/rag_protection_proxy/scanners/prompt_injection.py"
+      - "rag-protection-proxy/rag_protection_proxy/scanners/injection_ml.py"
+      - "rag-protection-proxy/rag_protection_proxy/scanners/**"
+      - "rag-protection-proxy/rag_protection_proxy/embeddings/**"
+      - ".github/workflows/rag-injbench.yml"
+  workflow_dispatch:
+
+jobs:
+  rag-injbench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install runtime deps (scanners + tests)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r rag-protection-proxy/requirements.txt -r rag-protection-proxy/requirements-dev.txt
+          pip install -e rag-protection-proxy
+          pip install pyyaml pytest
+
+      - name: Run rag-injbench unit tests
+        env:
+          PYTHONPATH: tools:rag-protection-proxy
+          RAG_EMBEDDING_BACKEND: hash
+        run: python -m pytest tools/inj_bench/tests -q
+
+      - name: Baseline regression gate (builtin scanners)
+        env:
+          RAG_EMBEDDING_BACKEND: hash
+        run: |
+          bash tools/rag-injbench run \
+            --target builtin \
+            --baseline tools/inj_bench/baseline/builtin.json \
+            --format junit --output rag-injbench.xml
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: rag-injbench-report
+          path: rag-injbench.xml

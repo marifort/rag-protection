@@ -1,0 +1,31 @@
+{
+  "pack": "sample",
+  "version": "1.0.0",
+  "description": "Generic CE sample DLP pattern pack. Demonstrates the pack format consumed by config.parse_dlp_pattern_pack(). Curated, regulation-specific packs (HIPAA/PCI/GDPR) are an Enterprise Edition entitlement.",
+  "patterns": [
+    {
+      "name": "sample_us_ssn",
+      "regex": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "label": "PII",
+      "replacement": "[REDACTED_SSN]",
+      "severity": 0.7,
+      "kind": "dlp"
+    },
+    {
+      "name": "sample_ca_sin",
+      "regex": "\\b\\d{3}-\\d{3}-\\d{3}\\b",
+      "label": "PII",
+      "replacement": "[REDACTED_SIN]",
+      "severity": 0.7,
+      "kind": "dlp"
+    },
+    {
+      "name": "sample_employee_id",
+      "regex": "\\bEMP-\\d{6}\\b",
+      "label": "INTERNAL",
+      "replacement": "[REDACTED_EMP]",
+      "severity": 0.4,
+      "kind": "dlp"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Console build artifacts
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+# EE UI build (also tracked under rag_protection_enterprise/ee_ui/dist for wheel packaging)
+ee_ui/node_modules/

@@ -1,0 +1,153 @@
+default_groups:
+  - all-staff
+
+group_hierarchy:
+  executives:
+    - all-staff
+  hr:
+    - all-staff
+  engineering:
+    - all-staff
+  data-platform:
+    - all-staff
+  admin:
+    - data-platform
+    - all-staff
+
+jwt_groups_claim: groups
+jwt_secret: ""
+jwt_algorithms:
+  - HS256
+
+# Corporate IdP (Okta, Azure AD, Auth0). Enable via oidc.enabled or RAG_OIDC_* env vars.
+# Path: rag-protection-proxy/config/acl_policy.yaml (not data/policy.yaml — that file is DLP/guardrails).
+# groups_claim must be set here (no RAG_OIDC_GROUPS_CLAIM env). Auth0 Option A often uses
+#   groups_claim: "https://rag-protection.local/groups"
+# enabled = YAML oidc.enabled OR env RAG_OIDC_ENABLED (either true keeps OIDC on).
+# After changing this file: POST /admin/reload-policy, then check /health oidc_enabled.
+# EE Sign in with IdP (auth code + PKCE) — set when Enterprise is installed:
+#   ui_client_id / ui_client_secret / ui_redirect_uri (e.g. http://localhost:8090/admin/auth/oidc/login/callback)
+#   or RAG_OIDC_UI_CLIENT_ID / RAG_OIDC_UI_CLIENT_SECRET / RAG_OIDC_UI_REDIRECT_URI
+oidc:
+  enabled: true
+  issuer: "https://dev-1eqi2utic18lr82y.us.auth0.com/"
+  audience: "https://rag-protection-api"
+  jwks_uri: "https://dev-1eqi2utic18lr82y.us.auth0.com/.well-known/jwks.json"
+  algorithms:
+    - RS256
+  groups_claim: "https://rag-protection.local/groups"
+  roles_claim: roles
+  ui_client_id: "g2nkUvF1aEZ4fN2P8KvFWbuYiEnkxOBH"
+  ui_client_secret: "WmWJhxBmIRqd_vXZXVosrKIKVeAhNxH93iuIkcWmqsOW4TjtsDWRUI0UL-5J0mVd"
+  ui_redirect_uri: "http://localhost:8090/admin/auth/oidc/login/callback"
+  ui_scopes: "openid profile email"
+  # Map IdP groups → operator admin roles (used when OIDC is enabled).
+  # Example (uncomment for production IdP onboarding):
+  admin_role_map:
+    policy_admin: [rag-platform-admins]
+    audit_reader: [rag-soc-readers]
+    audit_debug_reader: [rag-soc-debug]
+    ingest_admin: [rag-content-admins]
+  admin_global_groups: [rag-platform-admins]
+
+# Demo identity cast for local UI/curl playbooks (replace in production).
+# Canonical scenes: docs/ee/runbooks/IDENTITY_DEMO_PLAYBOOK.md
+# Two planes: demo_users = people (document ACL). admin_users = operators (RBAC).
+# Do not put person tokens in Admin bearer. The ACL group named "admin" is a
+# document/tool group (SQL gateway), not an operator role.
+demo_users:
+  - token: employee-demo-token
+    subject: alice.engineer
+    tenant_id: default
+    groups:
+      - engineering
+      - all-staff
+  - token: hr-demo-token
+    subject: bob.hr
+    tenant_id: default
+    groups:
+      - hr
+      - all-staff
+  - token: exec-demo-token
+    subject: carol.exec
+    tenant_id: default
+    groups:
+      - executives
+      - all-staff
+  - token: data-platform-demo-token
+    subject: frank.dba
+    tenant_id: default
+    groups:
+      - data-platform
+      - all-staff
+  - token: acme-employee-token
+    subject: dana.acme
+    tenant_id: acme
+    groups:
+      - engineering
+      - all-staff
+  - token: globex-employee-token
+    subject: finn.globex
+    tenant_id: globex
+    groups:
+      - engineering
+      - all-staff
+  - token: globex-hr-token
+    subject: eve.globex
+    tenant_id: globex
+    groups:
+      - hr
+      - all-staff
+
+# Admin RBAC (E2.4) — roles: policy_admin, audit_reader, audit_debug_reader, ingest_admin
+# Optional tenant_id scopes an operator to one namespace (Scene 3).
+admin_users:
+  - token: rag-admin-demo-key
+    subject: admin.demo
+    roles:
+      - policy_admin
+      - audit_reader
+      - audit_debug_reader
+      - ingest_admin
+  - token: rag-audit-reader-key
+    subject: audit.reader
+    roles:
+      - audit_reader
+  - token: rag-audit-debug-key
+    subject: audit.debug
+    roles:
+      - audit_reader
+      - audit_debug_reader
+  - token: rag-ingest-admin-key
+    subject: ingest.admin
+    roles:
+      - ingest_admin
+  - token: rag-policy-admin-key
+    subject: policy.admin
+    roles:
+      - policy_admin
+  - token: acme-ingest-admin
+    subject: acme.ingest
+    tenant_id: acme
+    roles:
+      - ingest_admin
+  - token: globex-audit-reader
+    subject: globex.audit
+    tenant_id: globex
+    roles:
+      - audit_reader
+
+# SCIM group sync (E2.1) — enable with fixture or live endpoint
+scim:
+  enabled: true
+  base_url: ""
+  bearer_token: ""
+  poll_interval_seconds: 300
+  fixture_file: "config/connectors/fixtures/scim_groups.json"
+
+# Multi-tenant policy partition (E2.5)
+tenants:
+  acme:
+    policy_file: ""
+  globex:
+    policy_file: ""

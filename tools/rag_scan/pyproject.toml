@@ -1,0 +1,46 @@
+# Standalone packaging for the rag-scan config scanner (Lab 2, L2-101).
+#
+# Install from this directory:
+#   pip install -e tools/rag_scan            # editable, for development
+#   pip install tools/rag_scan               # wheel/sdist build
+# This installs the `rag-scan` console script (entry point below).
+#
+# Runtime dependency: rag-scan imports the gateway's config loaders
+# (`rag_protection_proxy.config`). That package is NOT on PyPI — it ships in the
+# same monorepo. When run from a checkout, `_bootstrap.ensure_proxy_importable()`
+# adds the sibling `rag-protection-proxy/` to sys.path automatically, so no extra
+# install step is needed in-repo. For an out-of-tree install, also install the
+# proxy package (e.g. `pip install -e rag-protection-proxy`).
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-scan"
+version = "0.1.0"
+description = "Pre-production RAG config scanner — shift-left CI gate for RAG Protection policy/ACL/connector/vector config."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["rag", "security", "ci", "shift-left", "sarif", "owasp-llm"]
+dependencies = [
+  "pyyaml>=6.0.2",
+]
+
+[project.optional-dependencies]
+# Live VEC001 vector probe (`--qdrant`).
+vector = ["qdrant-client>=1.12.0"]
+dev = ["pytest>=8.3.0"]
+
+[project.scripts]
+rag-scan = "rag_scan.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/marifort/rag-protection"
+Documentation = "https://github.com/marifort/rag-protection/blob/main/tools/rag_scan/README.md"
+
+# The package directory IS this directory; map the import name onto it and list
+# sub-packages explicitly so the test suite is not shipped in the wheel.
+[tool.setuptools]
+package-dir = { "rag_scan" = "." }
+packages = ["rag_scan", "rag_scan.checks", "rag_scan.reporters"]

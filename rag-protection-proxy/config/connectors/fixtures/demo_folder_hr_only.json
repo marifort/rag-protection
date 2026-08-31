@@ -1,0 +1,13 @@
+{
+  "id": "demo-folder",
+  "name": "HR Policy Folder",
+  "content": "Confidential HR policy — engineers must not retrieve this after ACL mapping.",
+  "permissions": [
+    {"type": "user", "emailAddress": "hr@company.com", "role": "reader"},
+    {"type": "domain", "domain": "company.com", "role": "reader"}
+  ],
+  "group_map": {
+    "hr@company.com": "hr",
+    "@company.com": "all-staff"
+  }
+}

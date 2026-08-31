@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="320" viewBox="0 0 800 320">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="400" y="22" text-anchor="middle" class="title">P1 CHALLENGE Mode — Flow by Path</text>
+
+<rect x="20" y="40" width="760" height="70" class="group"/><text x="30" y="58" class="small">Query path</text>
+<rect x="40" y="62" width="150" height="36" class="box"/><text x="115" y="74" text-anchor="middle" class="label">scan_input</text><text x="115" y="94" text-anchor="middle" class="small">query</text><line x1="190" y1="80" x2="240" y2="80" class="arrow"/><rect x="240" y="62" width="150" height="36" class="box"/><text x="315" y="80" text-anchor="middle" class="label">effective block?</text><line x1="390" y1="80" x2="440" y2="80" class="arrow"/><rect x="440" y="62" width="150" height="36" class="box"/><text x="515" y="74" text-anchor="middle" class="label">query_guardrail_blocked</text><text x="515" y="94" text-anchor="middle" class="small">or retrieval</text>
+<rect x="20" y="130" width="760" height="70" class="group"/><text x="30" y="148" class="small">Chunk path</text>
+<rect x="40" y="152" width="150" height="36" class="box"/><text x="115" y="164" text-anchor="middle" class="label">scan_input</text><text x="115" y="184" text-anchor="middle" class="small">chunk</text><line x1="190" y1="170" x2="240" y2="170" class="arrow"/><rect x="240" y="152" width="150" height="36" class="box"/><text x="315" y="170" text-anchor="middle" class="label">effective block?</text><line x1="390" y1="170" x2="440" y2="170" class="arrow"/><rect x="440" y="152" width="150" height="36" class="box"/><text x="515" y="164" text-anchor="middle" class="label">exclude from LLM</text><text x="515" y="184" text-anchor="middle" class="small">or sanitized</text>
+<rect x="20" y="220" width="760" height="70" class="group"/><text x="30" y="238" class="small">Ingest path</text>
+<rect x="40" y="242" width="130" height="36" class="box"/><text x="105" y="260" text-anchor="middle" class="label">scan_ingest</text><line x1="170" y1="260" x2="215" y2="260" class="arrow"/><rect x="215" y="242" width="130" height="36" class="box"/><text x="280" y="260" text-anchor="middle" class="label">effective block?</text><line x1="345" y1="260" x2="390" y2="260" class="arrow"/><rect x="390" y="242" width="130" height="36" class="box"/><text x="455" y="254" text-anchor="middle" class="label">HTTP 422</text><text x="455" y="274" text-anchor="middle" class="small">or quarantine / active</text>
+</svg>

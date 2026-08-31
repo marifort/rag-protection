@@ -1,0 +1,101 @@
+# Default values for rag-protection Helm chart.
+# Mirrors compose.yml defaults; override for your cluster and IdP.
+# AWS/EKS: reuse this file + templates/ + the image in a registry.
+# Do not ship values-ee-local.yaml. See KIND_HELM_AWS.md in this directory.
+
+# Default is a single replica. replicaCount > 1 is refused unless the two-pod
+# demo slice constraints are met (shared vector store, no RWO PVC, no JSONL).
+# Overlay: values-ha-demo.yaml — not full E4.2 HA.
+replicaCount: 1
+
+image:
+  repository: rag-protection-proxy
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8090
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: rag-protection.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  mountPath: /data
+
+proxy:
+  adminApiKey: rag-admin-demo-key
+  storeBackend: sqlite
+  logLevel: INFO
+  # Production chart default (no demo tokens). Local Compose parity uses
+  # values-ee-local.yaml → acl_policy.yaml (Auth0 + demo_users).
+  policyFile: /app/config/policy.yaml
+  aclFile: /app/config/acl_policy.prod.yaml
+  sampleDocs: /app/config/sample_documents.json
+  policyWritableFile: /data/policy.yaml
+  digestOutputDir: /data/digest
+  toolPolicyFile: ""
+  eeEntitlements: ""
+  qdrantCollection: rag_chunks
+  llm:
+    baseUrl: http://model-runner.docker.internal/engines/v1
+    model: ai/gemma3-qat
+    apiKey: not-needed
+  audit:
+    file: /data/audit.jsonl
+    webhookUrl: ""
+    webhookTimeout: "5"
+    webhookRetries: "3"
+    deadLetterFile: /data/audit-dead-letter.jsonl
+  oidc:
+    enabled: false
+    issuer: ""
+    audience: ""
+    jwksUri: ""
+  google:
+    clientId: ""
+    clientSecret: ""
+    redirectUri: ""
+  extraEnv: []
+  extraEnvFrom: []
+
+# Overlay host files onto /app/config (created by tools/helm_start.sh).
+config:
+  existingConfigMap: ""
+  mounts:
+    - acl_policy.yaml
+    - policy.yaml
+    - sample_documents.json
+    - tool_policy.yaml
+    - tool_policy.mcp.yaml
+
+# Optional pod hostAliases (kind + Docker Model Runner).
+hostAliases: []
+
+qdrant:
+  enabled: false
+  image: qdrant/qdrant:v1.12.5
+  port: 6333
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 2Gi

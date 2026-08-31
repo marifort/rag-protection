@@ -1,0 +1,8 @@
+# Connector scheduler jobs (E5.7)
+# Used when RAG_CONNECTOR_SCHEDULE_FILE points here, or copy jobs into policy.yaml connectors.jobs
+
+jobs:
+  - connector: google_drive
+    tenant_id: default
+    source_id: payroll-sheet-001
+    fixture_path: drive_file.json

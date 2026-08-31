@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Convenience wrapper for the rag-scan config scanner.
+#
+# Runs `python -m rag_scan` from any directory by putting tools/ on PYTHONPATH
+# and preferring the repo virtualenv. The CLI's default --policy/--acl/--sample-docs
+# paths are absolute (resolved from the repo root), so all subcommands work
+# regardless of the current working directory.
+#
+# Examples:
+#   tools/rag-scan check --env prod
+#   tools/rag-scan check --env prod --acl rag-protection-proxy/config/acl_policy.prod.yaml
+#   tools/rag-scan validate
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [[ -x "${REPO_ROOT}/.venv/bin/python" ]]; then
+  PY="${REPO_ROOT}/.venv/bin/python"
+else
+  PY="$(command -v python3 || command -v python)"
+fi
+
+PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:${PYTHONPATH}}" exec "${PY}" -m rag_scan "$@"

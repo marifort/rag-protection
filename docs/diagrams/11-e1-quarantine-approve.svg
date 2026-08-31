@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="330" viewBox="0 0 520 330">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="260" y="22" text-anchor="middle" class="title">E1.1 — Quarantine Approve Flow</text>
+<rect x="30" y="55" width="120" height="36" class="box"/><text x="90" y="73" text-anchor="middle" class="label">POST /v1/ingest</text><line x1="150" y1="73" x2="185" y2="73" class="arrow"/><rect x="185" y="55" width="120" height="36" class="box"/><text x="245" y="67" text-anchor="middle" class="label">scan_input</text><text x="245" y="87" text-anchor="middle" class="small">title+content</text><line x1="305" y1="73" x2="340" y2="73" class="arrow"/><rect x="340" y="55" width="120" height="36" class="box"/><text x="400" y="67" text-anchor="middle" class="label">verdict</text><text x="400" y="87" text-anchor="middle" class="small">ALLOW/CHALLENGE/BLOCK</text>
+<text x="30" y="115" class="small">BLOCK or CHALLENGE+block → HTTP 422</text>
+<text x="30" y="133" class="small">CHALLENGE+allow → status quarantined</text>
+<line x1="185" y1="91" x2="185" y2="150" class="arrow"/><rect x="95" y="150" width="180" height="40" class="store"/><text x="185" y="164" text-anchor="middle" class="label">Quarantine Queue</text><text x="185" y="184" text-anchor="middle" class="small">UI table E1.1</text><line x1="185" y1="190" x2="185" y2="210" class="arrow"/><rect x="95" y="210" width="180" height="40" class="user"/><text x="185" y="224" text-anchor="middle" class="label">Operator Approve</text><text x="185" y="244" text-anchor="middle" class="small">POST /admin/.../approve</text><line x1="185" y1="250" x2="185" y2="270" class="arrow"/><rect x="95" y="270" width="180" height="40" class="box"/><text x="185" y="284" text-anchor="middle" class="label">Active document</text><text x="185" y="304" text-anchor="middle" class="small">searchable + corpus</text>
+<text x="320" y="175" class="small">hidden from GET /v1/documents</text>
+<text x="320" y="290" class="small">visible after approve</text>
+
+</svg>

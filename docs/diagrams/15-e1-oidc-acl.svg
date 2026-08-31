@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="160" viewBox="0 0 700 160">
+
+<style>
+  .box { fill: #e8f4fc; stroke: #2563eb; stroke-width: 1.5; rx: 6; }
+  .store { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+  .llm { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+  .user { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+  .label { font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .title { font: bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #111; }
+  .small { font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #444; }
+  .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .group { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; rx: 8; }
+</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/></marker></defs>
+
+<text x="350" y="22" text-anchor="middle" class="title">E1.6 — OIDC to ACL Flow</text>
+<rect x="25" y="70" width="115" height="36" class="box"/><text x="82" y="82" text-anchor="middle" class="label">Azure AD / Okta</text><text x="82" y="102" text-anchor="middle" class="small">RS256 JWT</text><line x1="140" y1="88" x2="168" y2="88" class="arrow"/><rect x="168" y="70" width="115" height="36" class="box"/><text x="225" y="82" text-anchor="middle" class="label">resolve_auth</text><text x="225" y="102" text-anchor="middle" class="small">OIDC JWKS</text><line x1="283" y1="88" x2="311" y2="88" class="arrow"/><rect x="311" y="70" width="115" height="36" class="box"/><text x="368" y="82" text-anchor="middle" class="label">AuthContext</text><text x="368" y="102" text-anchor="middle" class="small">groups</text><line x1="426" y1="88" x2="454" y2="88" class="arrow"/><rect x="454" y="70" width="115" height="36" class="box"/><text x="511" y="82" text-anchor="middle" class="label">store.search</text><text x="511" y="102" text-anchor="middle" class="small">ACL filter</text><line x1="569" y1="88" x2="597" y2="88" class="arrow"/><rect x="597" y="70" width="115" height="36" class="box"/><text x="654" y="82" text-anchor="middle" class="label">pipeline</text><text x="654" y="102" text-anchor="middle" class="small">scan + LLM</text>
+<text x="25" y="130" class="small">E1.6 runbook validates live IdP — see docs/qa/runbooks/OIDC_VALIDATION.md</text>
+
+</svg>

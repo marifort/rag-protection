@@ -1,0 +1,84 @@
+# RAG Protection Proxy — Splunk saved searches (Lab 3 SIEM pack)
+# Import: Settings → Searches → New → paste each stanza; set alert actions per SOC policy.
+# Validate: index sample lines from deploy/siem/samples/audit_sample.jsonl
+#
+# Field contract: docs/SIEM_FIELD_GUIDE.md · Triage: docs/SOC_RUNBOOK.md
+
+## RAG-Inj-Block-UserQuery — prompt injection blocked on user query
+index=rag_protection sourcetype=rag_protection:audit (kind=scan_input OR kind=query_blocked) decision=block
+  findings{}.scanner="prompt_injection" OR findings{}.category="injection"
+| stats count AS blocks min(_time) AS first_seen max(_time) AS last_seen BY subject tenant_id
+| where blocks >= 1
+
+## RAG-ACL-EmptyRetrieval — possible ACL enumeration (no authorized hits)
+index=rag_protection sourcetype=rag_protection:audit kind=query_blocked decision=block
+  (detail="*No authorized documents*" OR detail="*authorized documents*")
+| stats count AS empty_hits BY subject tenant_id
+| where empty_hits >= 5
+
+## RAG-DLP-HighVolume — burst of PII/DLP findings per subject (5 min window)
+index=rag_protection sourcetype=rag_protection:audit findings{}.scanner=pii OR findings{}.scanner=dlp
+| bin _time span=5m
+| stats count AS dlp_hits BY _time subject tenant_id
+| where dlp_hits > 20
+
+## RAG-Ingest-Quarantine — document quarantined at ingest
+index=rag_protection sourcetype=rag_protection:audit kind=ingest_completed decision=challenge
+| stats count AS quarantined BY subject tenant_id detail
+| where quarantined >= 1
+
+## RAG-ACL-Mapping-Fail — connector ACL mapping failure (fail-closed)
+index=rag_protection sourcetype=rag_protection:audit kind=acl_mapping_failed decision=block
+| stats count AS mapping_fails BY tenant_id source detail
+| where mapping_fails >= 1
+
+## RAG-Permission-Drift — critical permission drift (Lab 4; kind ships with drift monitor)
+index=rag_protection sourcetype=rag_protection:audit kind=permission_drift
+  (findings{}.label=critical OR risk_score>=0.85)
+| stats count AS drift_events latest(detail) AS last_detail BY tenant_id source
+| where drift_events >= 1
+
+## RAG-Tool-Block — unauthorized or policy-blocked tool invocation (Lab 1)
+index=rag_protection sourcetype=rag_protection:audit kind=tool_invoke decision=block
+| stats count AS tool_blocks BY subject tenant_id source detail
+| where tool_blocks >= 1
+
+## RAG-Tool-ExternalEmail — blocked outbound email domain (exfil attempt)
+index=rag_protection sourcetype=rag_protection:audit kind=tool_invoke decision=block source=send_email
+  (findings{}.category=blocked_domain OR detail="*blocked domain*")
+| stats count AS email_blocks BY subject tenant_id detail
+| where email_blocks >= 1
+
+## RAG-Citation-Fail-Spike — citation verification failures above baseline
+index=rag_protection sourcetype=rag_protection:audit kind=citation_failed decision=block
+| bin _time span=15m
+| stats count AS citation_fails BY _time tenant_id
+| eventstats avg(citation_fails) AS baseline
+| where citation_fails > baseline * 2 AND citation_fails >= 3
+
+## RAG-Corpus-Extraction — corpus scraping / enumeration suspected (Lab 9 / T0.1)
+index=rag_protection sourcetype=rag_protection:audit kind=extraction_suspected
+| stats count AS extraction_alerts latest(detail) AS window_stats latest(risk_score) AS risk BY subject tenant_id findings{}.label
+| where extraction_alerts >= 1
+
+## RAG-Canary-Triggered — honeypot document surfaced (ACL tripwire; Lab 10 / T0.2)
+index=rag_protection sourcetype=rag_protection:audit kind=canary_triggered decision=block
+| stats count AS canary_hits latest(detail) AS canary_detail BY subject tenant_id source
+| where canary_hits >= 1
+
+## RAG-Exfil-HighConfidence — canary hit AND extraction score in same hour (pair signal)
+index=rag_protection sourcetype=rag_protection:audit (kind=canary_triggered OR kind=extraction_suspected)
+| bin _time span=1h
+| stats values(kind) AS kinds count AS signals BY _time subject tenant_id
+| where signals >= 2 AND mvcount(kinds) >= 2
+
+## RAG-Cross-Tenant — same subject seen across unexpected tenants (config bug / attack)
+index=rag_protection sourcetype=rag_protection:audit subject=*
+| stats dc(tenant_id) AS tenant_count values(tenant_id) AS tenants BY subject
+| where tenant_count > 1
+
+## RAG-Webhook-DeadLetter — audit webhook dead-letter growth (operational)
+# Requires dead-letter JSONL shipped to Splunk via customer's log forwarder.
+index=rag_protection sourcetype=rag_protection:deadletter OR source="*audit_deadletter*"
+| stats count AS dead_letter_lines BY host
+| where dead_letter_lines > 0

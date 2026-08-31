@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "target": "builtin",
+  "corpus": "ee-full-v1",
+  "corpus_path": "full-v1",
+  "note": "",
+  "metrics": {
+    "detection_rate": 0.8368,
+    "false_positive_rate": 0.0,
+    "pass_rate": 0.8531,
+    "total": 320,
+    "should_catch": 288,
+    "caught": 241,
+    "benign": 32,
+    "false_positives": 0,
+    "per_category": {
+      "benign": {
+        "should_catch": 0,
+        "caught": 0,
+        "detection_rate": 1.0
+      },
+      "chat_template_injection": {
+        "should_catch": 48,
+        "caught": 40,
+        "detection_rate": 0.8333
+      },
+      "exfiltration": {
+        "should_catch": 48,
+        "caught": 34,
+        "detection_rate": 0.7083
+      },
+      "instruction_override": {
+        "should_catch": 48,
+        "caught": 43,
+        "detection_rate": 0.8958
+      },
+      "obfuscated_payload": {
+        "should_catch": 48,
+        "caught": 37,
+        "detection_rate": 0.7708
+      },
+      "role_hijack": {
+        "should_catch": 48,
+        "caught": 43,
+        "detection_rate": 0.8958
+      },
+      "secret_extraction": {
+        "should_catch": 48,
+        "caught": 44,
+        "detection_rate": 0.9167
+      }
+    }
+  }
+}

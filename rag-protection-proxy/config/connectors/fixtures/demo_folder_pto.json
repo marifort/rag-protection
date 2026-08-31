@@ -1,0 +1,11 @@
+{
+  "id": "demo-folder-pto",
+  "name": "HR PTO Policy",
+  "content": "Confidential PTO rules — HR only.",
+  "permissions": [
+    {"type": "user", "emailAddress": "hr@company.com", "role": "reader"}
+  ],
+  "group_map": {
+    "hr@company.com": "hr"
+  }
+}

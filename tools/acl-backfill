@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Convenience wrapper for the acl-backfill migration utility (A4).
+#
+# Examples (repo root):
+#   tools/acl-backfill \
+#     --backend memory --snapshot tools/acl_backfill/examples/store_snapshot.json \
+#     --permissions tools/acl_backfill/examples/permissions.json \
+#     --group-map tools/acl_backfill/examples/group_map.yaml
+#
+#   tools/acl-backfill --backend qdrant --qdrant http://localhost:6333 \
+#     --collection rag --permissions perms.json --group-map map.yaml --apply
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [[ -x "${REPO_ROOT}/.venv/bin/python" ]]; then
+  PY="${REPO_ROOT}/.venv/bin/python"
+else
+  PY="$(command -v python3 || command -v python)"
+fi
+
+PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:${PYTHONPATH}}" exec "${PY}" -m acl_backfill "$@"

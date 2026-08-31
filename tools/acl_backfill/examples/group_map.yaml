@@ -1,0 +1,4 @@
+# email / @domain → product ACL group names
+"alice@corp.com": hr
+"hr-lead@corp.com": hr
+"@corp.com": all-staff

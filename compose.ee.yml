@@ -1,0 +1,24 @@
+# RAG Protection — Enterprise Docker overlay
+#
+# Usage (EE proxy + Lab 1 MCP Layer 2 — includes compose.mcp-tools.yml via include):
+#   docker compose -f compose.yml -f compose.ee.yml --profile mcp-tools up -d --build
+#   bash tools/docker_start.sh --ee
+#
+# Requires rag-protection-enterprise/ checkout (private repo) as sibling or in monorepo.
+# Compose overlay matrix: docs/commercial/COMPOSE_OVERLAYS.md
+
+include:
+  - compose.mcp-tools.yml
+
+services:
+  rag-protection-proxy:
+    build:
+      context: .
+      dockerfile: rag-protection-proxy/Dockerfile.ee
+      args:
+        INSTALL_EE_WHEEL: "1"
+    image: rag-protection-proxy:ee
+    volumes:
+      # Live EE code + compliance docs for local demos (A5 ZIP embeds docs/compliance/*).
+      - ./rag-protection-enterprise/rag_protection_enterprise:/app/rag_protection_enterprise:ro
+      - ./docs/compliance:/app/docs/compliance:ro

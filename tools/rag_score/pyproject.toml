@@ -1,0 +1,44 @@
+# Standalone packaging for the rag-score posture scorecard (A3, lead-gen asset).
+#
+# Install from this directory:
+#   pip install -e tools/rag_score            # editable, for development
+#   pip install tools/rag_score               # wheel/sdist build
+# This installs the `rag-score` console script (entry point below).
+#
+# rag-score wraps the sibling `rag-scan` package (tools/rag_scan), which in turn
+# imports the gateway's config loaders. When run from a checkout, both are found
+# on PYTHONPATH automatically via the `tools/rag-score` wrapper; for an out-of-tree
+# install, also install rag-scan (`pip install -e tools/rag_scan`) and the proxy.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-score"
+version = "0.1.0"
+description = "RAG security posture scorecard — free A–F grade wrapping rag-scan + the OWASP LLM Top 10 map."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["rag", "security", "posture", "scorecard", "owasp-llm", "lead-gen"]
+dependencies = [
+  "rag-scan",
+]
+
+[project.optional-dependencies]
+# Live VEC001 vector probe (`--qdrant`), delegated to rag-scan.
+vector = ["rag-scan[vector]"]
+dev = ["pytest>=8.3.0"]
+
+[project.scripts]
+rag-score = "rag_score.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/marifort/rag-protection"
+Documentation = "https://github.com/marifort/rag-protection/blob/main/tools/rag_score/README.md"
+
+# The package directory IS this directory; map the import name onto it and list
+# sub-packages explicitly so the test suite is not shipped in the wheel.
+[tool.setuptools]
+package-dir = { "rag_score" = "." }
+packages = ["rag_score"]

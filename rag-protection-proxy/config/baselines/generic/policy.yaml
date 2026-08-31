@@ -1,0 +1,93 @@
+version: 1
+audit:
+  retention_days: 90
+  backup_keep_days: 30
+  scrub_export: true
+  max_export_rows: 5000
+  debug_mode: false
+tenant:
+  quotas:
+    queries_per_minute: 0
+    burst: 10
+dlp:
+  enable_ner: false
+  labels:
+  - INTERNAL
+  - PCI
+  - PHI
+  - PII
+  custom_patterns:
+  - name: sample_us_ssn
+    regex: \b\d{3}-\d{2}-\d{4}\b
+    replacement: '[REDACTED_SSN]'
+    severity: 0.7
+    enabled: true
+    kind: dlp
+    label: PII
+  - name: sample_ca_sin
+    regex: \b\d{3}-\d{3}-\d{3}\b
+    replacement: '[REDACTED_SIN]'
+    severity: 0.7
+    enabled: true
+    kind: dlp
+    label: PII
+  - name: sample_employee_id
+    regex: \bEMP-\d{6}\b
+    replacement: '[REDACTED_EMP]'
+    severity: 0.4
+    enabled: true
+    kind: dlp
+    label: INTERNAL
+input:
+  challenge_threshold: 0.4
+  block_threshold: 0.71
+  challenge_mode: allow
+  strip_hidden_chars: true
+  strip_html_comments: true
+  redact_pii: true
+  redact_secrets: true
+  ml_injection_enabled: true
+  ml_injection_threshold: 0.72
+  injection_categories:
+    instruction_override: true
+    role_hijack: true
+    fake_system_prompt: true
+    chat_template_injection: true
+    exfiltration_directive: true
+    destructive_action: true
+    secret_extraction: true
+    pii_exfiltration: true
+    obfuscated_payload: true
+    hidden_chars: true
+    html_comment_injection: true
+    markdown_js_link: true
+    base64_payload: true
+  custom_injection_patterns: []
+output:
+  challenge_threshold: 0.5
+  block_threshold: 0.85
+  challenge_mode: audit_only
+  min_citation_coverage: 0.15
+  block_system_prompt_leak: true
+  per_claim_citations: true
+  entailment_check: false
+  entailment_threshold: 0.6
+network:
+  allowed_domains:
+  - docs.example.com
+  denied_domains:
+  - evil.example
+  - phish.test
+  block_private_ranges: false
+llm:
+  base_url: http://model-runner.docker.internal/engines/v1
+  model: ai/gemma3-qat
+  api_key: not-needed
+  timeout_seconds: 90
+  max_tokens: 512
+  temperature: 0.2
+connectors:
+  enabled: false
+  unmapped_permissions: deny
+  drift:
+    enabled: true

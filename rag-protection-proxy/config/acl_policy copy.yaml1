@@ -1,0 +1,91 @@
+default_groups:
+  - all-staff
+
+group_hierarchy:
+  executives:
+    - all-staff
+  hr:
+    - all-staff
+  engineering:
+    - all-staff
+
+jwt_groups_claim: groups
+jwt_secret: ""
+jwt_algorithms:
+  - HS256
+
+# Corporate IdP (Okta, Azure AD). Enable via oidc.enabled or RAG_OIDC_* env vars.
+oidc:
+  enabled: false
+  issuer: ""
+  audience: ""
+  jwks_uri: ""
+  algorithms:
+    - RS256
+  groups_claim: groups
+  roles_claim: roles
+
+# Demo bearer tokens for local testing (replace in production).
+demo_users:
+  - token: employee-demo-token
+    subject: alice.engineer
+    tenant_id: default
+    groups:
+      - engineering
+      - all-staff
+  - token: hr-demo-token
+    subject: bob.hr
+    tenant_id: default
+    groups:
+      - hr
+      - all-staff
+  - token: exec-demo-token
+    subject: carol.exec
+    tenant_id: default
+    groups:
+      - executives
+      - all-staff
+  - token: acme-employee-token
+    subject: dana.acme
+    tenant_id: acme
+    groups:
+      - engineering
+      - all-staff
+  - token: globex-hr-token
+    subject: eve.globex
+    tenant_id: globex
+    groups:
+      - hr
+      - all-staff
+
+# Admin RBAC (E2.4) — roles: policy_admin, audit_reader, ingest_admin
+admin_users:
+  - token: rag-admin-demo-key
+    subject: admin.demo
+    roles:
+      - policy_admin
+      - audit_reader
+      - ingest_admin
+  - token: rag-audit-reader-key
+    subject: audit.reader
+    roles:
+      - audit_reader
+  - token: rag-ingest-admin-key
+    subject: ingest.admin
+    roles:
+      - ingest_admin
+
+# SCIM group sync (E2.1) — enable with fixture or live endpoint
+scim:
+  enabled: false
+  base_url: ""
+  bearer_token: ""
+  poll_interval_seconds: 300
+  fixture_file: ""
+
+# Multi-tenant policy partition (E2.5)
+tenants:
+  acme:
+    policy_file: ""
+  globex:
+    policy_file: ""

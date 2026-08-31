@@ -1,0 +1,331 @@
+version: 1
+audit:
+  integrity_chain: true
+  sample_by_kind:
+    connector_sync:
+      when_decision: [allow]
+      keep_every: 0
+    # keep_every: 0 drops routine acl_sync allows. Quiet fixture second ticks
+    # (acl_updated false) will not appear on the Audit chip; Connectors Mode still
+    # shows acl_only. Rows with acl_updated true (typical live Drive share change)
+    # still record. See docs/ee/features/12-acl-sync.md#acl-sync-audit-sampling
+    acl_sync:
+      when_decision: [allow]
+      keep_every: 0
+  retention_by_kind:
+    connector_sync: 3
+    acl_sync: 7
+    permission_drift: 90
+    canary_triggered: 90
+    extraction_suspected: 90
+  retain_decisions:
+    block: 90
+    challenge: 30
+tenant:
+  quotas:
+    queries_per_minute: 0
+    burst: 10
+dlp:
+  enable_ner: true
+  labels:
+  - GDPR
+  - INTERNAL
+  - PCI
+  - PHI
+  custom_patterns:
+  - name: acme_api_key_reduction
+    regex: \bacme_live_[A-Za-z0-9]{24}\b
+    replacement: '[ACME_API_KEY]'
+    severity: 0.6
+    enabled: true
+    kind: secret
+    label: INTERNAL
+  - name: employee_id
+    regex: \bEMP-\d{6}\b
+    replacement: '[REDACTED_EMP_ID]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: INTERNAL
+  - name: vault_token
+    regex: \bvault\s+token?\b
+    replacement: '[REDACTED_TOKEN]'
+    severity: 0.6
+    enabled: true
+    kind: secret
+    label: INTERNAL
+  - name: hipaa_mrn
+    regex: \bMRN[-:\s]{0,3}\d{6,10}\b
+    replacement: '[REDACTED_MRN]'
+    severity: 0.7
+    enabled: true
+    kind: dlp
+    label: PHI
+  - name: hipaa_npi
+    regex: \bNPI[-:\s]{0,3}\d{10}\b
+    replacement: '[REDACTED_NPI]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: PHI
+  - name: hipaa_dea
+    regex: \b[ABFGMPRX][A-Z]\d{7}\b
+    replacement: '[REDACTED_DEA]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: PHI
+  - name: hipaa_medicare_mbi
+    regex: \b[1-9][A-Z][0-9A-Z]\d[A-Z][0-9A-Z]\d[A-Z]{2}\d{2}\b
+    replacement: '[REDACTED_MBI]'
+    severity: 0.7
+    enabled: true
+    kind: dlp
+    label: PHI
+  - name: pci_pan_visa
+    regex: \b4\d{12}(?:\d{3})?\b
+    replacement: '[REDACTED_PAN]'
+    severity: 0.9
+    enabled: true
+    kind: dlp
+    label: PCI
+  - name: pci_pan_mastercard
+    regex: \b5[1-5]\d{14}\b
+    replacement: '[REDACTED_PAN]'
+    severity: 0.9
+    enabled: true
+    kind: dlp
+    label: PCI
+  - name: pci_pan_amex
+    regex: \b3[47]\d{13}\b
+    replacement: '[REDACTED_PAN]'
+    severity: 0.9
+    enabled: true
+    kind: dlp
+    label: PCI
+  - name: pci_pan_discover
+    regex: \b6(?:011|5\d{2})\d{12}\b
+    replacement: '[REDACTED_PAN]'
+    severity: 0.9
+    enabled: true
+    kind: dlp
+    label: PCI
+  - name: pci_track1_data
+    regex: '%B\d{12,19}\^'
+    replacement: '[REDACTED_TRACK]'
+    severity: 0.95
+    enabled: true
+    kind: dlp
+    label: PCI
+  - name: gdpr_iban
+    regex: \b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b
+    replacement: '[REDACTED_IBAN]'
+    severity: 0.7
+    enabled: true
+    kind: dlp
+    label: GDPR
+  - name: gdpr_uk_nino
+    regex: \b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]\d{6}[A-D]\b
+    replacement: '[REDACTED_NINO]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: GDPR
+  - name: gdpr_spain_dni
+    regex: \b\d{8}[A-Z]\b
+    replacement: '[REDACTED_DNI]'
+    severity: 0.5
+    enabled: true
+    kind: dlp
+    label: GDPR
+  - name: gdpr_france_insee
+    regex: \b[12]\d{14}\b
+    replacement: '[REDACTED_INSEE]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: GDPR
+  - name: gdpr_italy_codice_fiscale
+    regex: \b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b
+    replacement: '[REDACTED_CF]'
+    severity: 0.6
+    enabled: true
+    kind: dlp
+    label: GDPR
+input:
+  challenge_threshold: 0.4
+  block_threshold: 0.71
+  challenge_mode: allow
+  strip_hidden_chars: true
+  strip_html_comments: true
+  redact_pii: true
+  redact_secrets: true
+  ml_injection_enabled: true
+  ml_injection_threshold: 0.72
+  injection_categories:
+    instruction_override: true
+    role_hijack: true
+    fake_system_prompt: true
+    chat_template_injection: true
+    exfiltration_directive: true
+    destructive_action: true
+    secret_extraction: true
+    obfuscated_payload: true
+    hidden_chars: true
+    html_comment_injection: true
+    markdown_js_link: true
+    base64_payload: true
+  custom_injection_patterns:
+  - name: debug_api_keys_probe
+    regex: \breveal\s+debug\s+api\s+keys?\b
+    severity: 0.85
+    detail: Policy-defined injection pattern.
+    enabled: true
+  - name: acme_vault_probe
+    regex: \breveal\s+acme\s+vault\b
+    severity: 0.9
+    detail: Acme vault probe pattern.
+    enabled: true
+output:
+  # Output DLP risk thresholds (Guardrail 2 — after citation)
+  challenge_threshold: 0.5
+  block_threshold: 0.85
+  challenge_mode: block
+  # Soft citation coverage + system-prompt leak regex (Guardrail 4)
+  min_citation_coverage: 0.15
+  block_system_prompt_leak: true
+  # Per-claim hard gate (#8)
+  per_claim_citations: true
+  hard_citation_gate: true
+  substantive_min_tokens: 3
+  # Entailment / NLI grounding (E3.5)
+  entailment_check: true
+  entailment_threshold: 0.55
+network:
+  allowed_domains:
+  - cdn.trusted.example
+  - docs.example.com
+  block_private_ranges: true
+  denied_domains:
+  - anonfiles.com
+  - burp
+  - burpcollaborator.net
+  - canarytokens.com
+  - discord.com
+  - discordapp.com
+  - evil.example
+  - file.io
+  - ghostbin.com
+  - hookbin.com
+  - interactsh.com
+  - ngrok-free.app
+  - ngrok.io
+  - oastify.com
+  - paste.ee
+  - paste.mozilla.org
+  - pastebin.com
+  - phish.test
+  - pipedream.net
+  - requestbin.com
+  - sendspace.com
+  - t.me
+  - telegram.me
+  - tmpfiles.org
+  - transfer.sh
+  - webhook.site
+  - wetransfer.com
+llm:
+  base_url: http://model-runner.docker.internal/engines/v1
+  model: ai/gemma3-qat
+  api_key: not-needed
+  timeout_seconds: 90
+  max_tokens: 512
+  temperature: 0.2
+llm_routing:
+  enabled: false
+  fail_closed: true
+  default_endpoint_id: default
+  classification_rank:
+  - highly-confidential
+  - confidential-hr
+  - confidential
+  - internal-engineering
+  - internal
+  - public-support
+  - public
+  endpoints:
+    default: {}
+    eu-onprem:
+      base_url: http://llm-eu.internal.example/v1
+      model: hr-onprem
+      api_key: not-needed
+    us-saas:
+      base_url: http://llm-us.saas.example/v1
+      model: public-faq
+      api_key: not-needed
+  routes:
+  - match: highly-confidential
+    endpoint_id: eu-onprem
+  - match: confidential
+    endpoint_id: eu-onprem
+  - match: public
+    endpoint_id: eu-onprem
+extraction:
+  enabled: true
+  window_seconds: 60
+  min_window_queries: 20
+  min_corpus_size: 5
+  elevated_coverage: 0.5
+  severe_coverage: 0.7
+  breadth_ratio_threshold: 0.8
+  novelty_ratio_threshold: 0.9
+  action: alert
+canary:
+  enabled: true
+  output_backstop: true
+  auditor_subjects: []
+  auditor_groups: []
+  default_sensitivity: restricted
+connectors:
+  enabled: true
+  schedule_interval_minutes: 1
+  unmapped_permissions: deny
+  drift:
+    enabled: true
+    critical_if_public: true
+    auto_quarantine_on_critical: false
+  # ACL-only when stored source_revision matches the incoming snapshot.
+  # Bundled demo_folder_*.json omit source_revision, so the fingerprint is a hash
+  # of permissions: widen/narrow ticks are often sync_mode=full; the next unchanged
+  # tick is acl_only. Live Drive uses modifiedTime/md5Checksum (share-only change
+  # is usually ACL-only on the same tick as drift). #12 copies current source
+  # groups — it does not revert Drive. docs/ee/features/12-acl-sync.md
+  acl_sync:
+    enabled: true
+    min_interval_minutes: 1
+    acl_only_when_unchanged: true
+  jobs:
+  # Fixture job: source_id must match the JSON "id". Restore demo_folder_hr_only.json
+  # from git (or the DEMO_SCRIPT heredoc) before a new widen; a leftover widened copy
+  # yields severity none.
+  - connector: google_drive
+    source_id: demo-folder
+    fixture_path: demo_folder_hr_only.json
+  - connector: google_drive
+    source_id: 1QObXQREfF2wP6Y3I6sHyhLbWUrHYm4ej
+    tenant_id: default
+    group_map:
+      marfav2@gmail.com: hr
+  - connector: google_drive
+    source_id: 1XIX-fQ0M-E1xHT9xEZqzTjpGPLAsW-bd
+    tenant_id: default
+    group_map:
+      marfav2@gmail.com: hr
+  - connector: google_drive
+    source_id: 1Uhwrm0tBjwDNoFkJ2Ny5iswsNh8KgAj_
+    tenant_id: default
+    group_map:
+      marfav2@gmail.com: hr
+retrieval:
+  explainability_enabled: true
+  max_trace_candidates: 100

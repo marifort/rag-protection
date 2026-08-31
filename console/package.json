@@ -1,0 +1,24 @@
+{
+  "name": "rag-protection-console",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Marifort Systems Inc. <support@marifort.com>",
+  "description": "Marifort Gate operator console (CE shell + shared core)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @rag-protection/console-core && npm run build -w @rag-protection/console-ce",
+    "build:core": "npm run build -w @rag-protection/console-core",
+    "build:ce": "npm run build -w @rag-protection/console-ce",
+    "dev": "npm run dev -w @rag-protection/console-ce",
+    "dev:ce-only": "VITE_EE=off npm run dev -w @rag-protection/console-ce",
+    "dev:core": "npm run dev -w @rag-protection/console-core",
+    "test": "npm run test -w @rag-protection/console-core && npm run test -w @rag-protection/console-ce",
+    "typecheck": "npm run typecheck -w @rag-protection/console-core && npm run typecheck -w @rag-protection/console-ce"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- RAG Protection Proxy — Splunk dashboard (Lab 3). Import via Simple XML or rebuild in Splunk Studio. -->
+<dashboard version="1.1" theme="dark">
+  <label>RAG Protection — Security Overview</label>
+  <description>Mirror of in-product audit stats (E5.8). Index: rag_protection, sourcetype: rag_protection:audit</description>
+  <row>
+    <panel>
+      <title>Blocks by decision (24h)</title>
+      <chart>
+        <search>
+          <query>index=rag_protection sourcetype=rag_protection:audit earliest=-24h
+| stats count by decision</query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Events by kind (24h)</title>
+      <chart>
+        <search>
+          <query>index=rag_protection sourcetype=rag_protection:audit earliest=-24h
+| stats count by kind</query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top scanners (findings)</title>
+      <table>
+        <search>
+          <query>index=rag_protection sourcetype=rag_protection:audit earliest=-24h findings{}.scanner=*
+| stats count by findings{}.scanner findings{}.category
+| sort - count</query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <title>Extraction + canary alerts (7d)</title>
+      <table>
+        <search>
+          <query>index=rag_protection sourcetype=rag_protection:audit earliest=-7d
+  (kind=extraction_suspected OR kind=canary_triggered)
+| table _time kind subject tenant_id risk_score detail source
+| sort - _time</query>
+          <earliest>-7d</earliest>
+          <latest>now</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Blocks by tenant</title>
+      <chart>
+        <search>
+          <query>index=rag_protection sourcetype=rag_protection:audit decision=block earliest=-24h
+| stats count by tenant_id</query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

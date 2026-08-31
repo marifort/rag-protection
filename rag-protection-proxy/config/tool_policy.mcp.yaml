@@ -1,0 +1,53 @@
+# Tool gateway policy — Layer 2 compose overlay (real MCP filesystem backend)
+# Use with: RAG_TOOL_POLICY_FILE=/app/config/tool_policy.mcp.yaml
+# See compose.mcp-tools.yml and docs/commercial/labs/lab1-mcp/MCP_INTEGRATION_LAYERS.md
+
+defaults:
+  challenge_threshold: 0.4
+  block_threshold: 0.8
+  challenge_mode: block
+
+tools:
+  send_email:
+    description: Send an email message to one or more recipients.
+    backend: mock_email
+    allowed_groups:
+      - all-staff
+    max_args_bytes: 8192
+    blocked_domains:
+      - personal-email.com
+      - mailinator.com
+    scan_arguments:
+      - body
+      - subject
+
+  read_file:
+    description: Read a file from the sandbox filesystem (MCP backend).
+    backend: mcp_filesystem
+    mcp_tool: read_text_file
+    allowed_groups:
+      - engineering
+      - hr
+      - executives
+    max_args_bytes: 4096
+    blocked_patterns:
+      - "../"
+      - "/etc/"
+      - ".ssh"
+    scan_arguments:
+      - path
+
+  run_sql:
+    description: Execute a read-only SQL query against the analytics database.
+    backend: mock_sql
+    allowed_groups:
+      - data-platform
+      - admin
+    max_args_bytes: 4096
+    blocked_patterns:
+      - DROP TABLE
+      - DELETE FROM
+      - TRUNCATE
+      - ";--"
+    scan_arguments:
+      - query

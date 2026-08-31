@@ -1,0 +1,10 @@
+# Maps Drive emails → product groups for the seeded demo corpus
+# (rag-protection-proxy/config/sample_documents.json / Qdrant collection rag_chunks).
+#
+# Do not add "@corp.com": all-staff here. Runtime Drive mapping also applies the
+# domain group to every @corp.com user grant, which would put all-staff on
+# hr-payroll and let employee-demo-token retrieve it.
+"alice.engineer@corp.com": engineering
+"bob.hr@corp.com": hr
+"carol.exec@corp.com": executives
+"staff-share@corp.com": all-staff

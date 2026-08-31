@@ -1,0 +1,157 @@
+# Marifort Gate — local demo stack
+#
+# Prerequisites:
+#   Docker Desktop 4.40+ with Model Runner enabled
+#   (Settings → AI → Enable Docker Model Runner)
+#
+# Start:
+#   bash tools/docker_start.sh
+#   bash tools/docker_start.sh --smoke
+#   docker compose up -d --build
+#
+# GitHub Actions has no Model Runner plugin — use compose.ci.yml there
+# (or locally without Desktop). Enable it: Settings → AI → Enable Docker Model Runner.
+#
+# Endpoints:
+#   Proxy health:  http://localhost:8090/health
+#   Query API:     POST http://localhost:8090/v1/query
+#   Metrics:       http://localhost:8090/metrics
+#
+# Demo tokens (see config/acl_policy.yaml and docs/ee/runbooks/IDENTITY_DEMO_PLAYBOOK.md):
+#   People: employee-demo-token, hr-demo-token, exec-demo-token, data-platform-demo-token
+#           acme-employee-token, globex-employee-token, globex-hr-token
+#   Operators: rag-admin-demo-key, rag-audit-reader-key, rag-audit-debug-key,
+#              rag-ingest-admin-key, rag-policy-admin-key, acme-ingest-admin, globex-audit-reader
+#
+# Optional Qdrant (CE semantic / hybrid retrieval + ACL metadata filters):
+#   bash tools/docker_start.sh --qdrant
+#   docker compose --profile qdrant up -d --build
+#   RAG_STORE_BACKEND=vector RAG_QDRANT_URL=http://localhost:6333
+#   (RAG_STORE_BACKEND=vector|hybrid also auto-enables the qdrant profile)
+#
+# Optional Pinecone Local (Pattern C / LangChain BYO examples — not a CE store backend):
+#   bash tools/docker_start.sh --pinecone
+#   docker compose --profile pinecone up -d
+#   See examples/langchain/README.md
+#
+# Switch stacks (stop the other profile first — Compose leaves idle containers running):
+#   bash tools/docker_stop.sh --qdrant --pinecone
+#   bash tools/docker_start.sh --qdrant          # CE/EE retrieval via Qdrant
+#   bash tools/docker_start.sh --pinecone        # Pattern C examples only
+#
+# Optional MCP tool backends (Layer 2 — isolated network):
+#   bash tools/docker_start.sh --mcp-tools
+#   bash tools/docker_stop.sh --mcp-tools
+#   See docs/commercial/labs/lab1-mcp/LAYER2_MCP_RUNBOOK.md
+
+name: rag-protection
+
+models:
+  llm:
+    model: ${MODEL_RUNNER_MODEL:-ai/gemma3-qat}
+    context_size: 4096
+
+services:
+  rag-protection-proxy:
+    build:
+      context: .
+      dockerfile: rag-protection-proxy/Dockerfile
+      args:
+        INSTALL_EE_WHEEL: "0"
+    image: rag-protection-proxy:latest
+    container_name: rag-protection-proxy
+    restart: unless-stopped
+    ports:
+      - "${RAG_PORT:-8090}:8090"
+    models:
+      llm:
+        endpoint_var: RAG_LLM_BASE_URL
+        model_var: RAG_LLM_MODEL
+    environment:
+      RAG_POLICY_FILE: /app/config/policy.yaml
+      RAG_ACL_FILE: /app/config/acl_policy.yaml
+      RAG_SAMPLE_DOCS: /app/config/sample_documents.json
+      RAG_DATA_DIR: /data
+      # When config is mounted :ro, policy knob saves go to /data/policy.yaml (auto-seeded from config).
+      RAG_POLICY_WRITABLE_FILE: ${RAG_POLICY_WRITABLE_FILE:-/data/policy.yaml}
+      RAG_STORE_BACKEND: ${RAG_STORE_BACKEND:-sqlite}
+      RAG_QDRANT_URL: ${RAG_QDRANT_URL:-http://qdrant:6333}
+      RAG_QDRANT_COLLECTION: ${RAG_QDRANT_COLLECTION:-rag_chunks}
+      RAG_OIDC_ENABLED: ${RAG_OIDC_ENABLED:-false}
+      RAG_OIDC_ISSUER: ${RAG_OIDC_ISSUER:-}
+      RAG_OIDC_AUDIENCE: ${RAG_OIDC_AUDIENCE:-}
+      RAG_OIDC_JWKS_URI: ${RAG_OIDC_JWKS_URI:-}
+      RAG_LLM_BASE_URL: ${RAG_LLM_BASE_URL:-http://model-runner.docker.internal/engines/v1}
+      RAG_LLM_MODEL: ${RAG_LLM_MODEL:-ai/gemma3-qat}
+      RAG_LLM_API_KEY: not-needed
+      RAG_LOG_LEVEL: ${RAG_LOG_LEVEL:-INFO}
+      RAG_ADMIN_API_KEY: ${RAG_ADMIN_API_KEY:-rag-admin-demo-key}
+      RAG_EE_ENTITLEMENTS: ${RAG_EE_ENTITLEMENTS:-}
+      # Google Drive OAuth (E5.6) — set RAG_GOOGLE_CLIENT_ID/SECRET in .env for live ingest
+      RAG_GOOGLE_CLIENT_ID: ${RAG_GOOGLE_CLIENT_ID:-}
+      RAG_GOOGLE_CLIENT_SECRET: ${RAG_GOOGLE_CLIENT_SECRET:-}
+      RAG_GOOGLE_REDIRECT_URI: ${RAG_GOOGLE_REDIRECT_URI:-http://localhost:8090/admin/connectors/google-drive/oauth/callback}
+      # Optional connector scheduler (E5.7)
+      RAG_CONNECTORS_ENABLED: ${RAG_CONNECTORS_ENABLED:-}
+      RAG_CONNECTOR_SCHEDULE_FILE: ${RAG_CONNECTOR_SCHEDULE_FILE:-}
+      # Host ./data is bind-mounted at /data; use container path (not .env ./data/audit.jsonl).
+      RAG_AUDIT_FILE: /data/audit.jsonl
+      RAG_AUDIT_WEBHOOK_URL: ${RAG_AUDIT_WEBHOOK_URL:-}
+      RAG_AUDIT_WEBHOOK_TIMEOUT: ${RAG_AUDIT_WEBHOOK_TIMEOUT:-5}
+      # #26 digest file send. Pin /data/digest (host ./data/digest). Do not
+      # interpolate ${RAG_DIGEST_OUTPUT_DIR} — a leftover host export of
+      # /tmp/rag-digest writes inside the container, not the ./data bind mount.
+      RAG_DIGEST_OUTPUT_DIR: /data/digest
+    volumes:
+      - ./data:/data
+      - ./rag-protection-proxy/config:/app/config:ro
+      # UI + Python source mounted for local dev (rebuild not required after code edits; restart container).
+      - ./rag-protection-proxy/rag_protection_proxy:/app/rag_protection_proxy:ro
+    depends_on:
+      qdrant:
+        condition: service_started
+        required: false
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8090/health | grep -q healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    container_name: rag-protection-qdrant
+    profiles: ["qdrant"]
+    restart: unless-stopped
+    ports:
+      - "${RAG_QDRANT_PORT:-6333}:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6333/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Pinecone Local index emulator for Pattern C examples (ingest → scan → upsert).
+  # Not a CE retrieval backend — proxy store remains sqlite/qdrant/pgvector.
+  # Image is linux/amd64 only; Docker Desktop on Apple Silicon uses emulation.
+  # Docs: https://docs.pinecone.io/guides/operations/local-development
+  pinecone-local:
+    image: ghcr.io/pinecone-io/pinecone-index:latest
+    container_name: rag-protection-pinecone-local
+    profiles: ["pinecone"]
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      PORT: 5081
+      INDEX_TYPE: serverless
+      VECTOR_TYPE: dense
+      DIMENSION: ${PINECONE_DIMENSION:-8}
+      METRIC: cosine
+    ports:
+      - "${RAG_PINECONE_PORT:-5081}:5081"
+
+volumes:
+  qdrant-data:

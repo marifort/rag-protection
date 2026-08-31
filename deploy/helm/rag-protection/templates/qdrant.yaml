@@ -1,0 +1,81 @@
+{{- if .Values.qdrant.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rag-protection.fullname" . }}-qdrant
+  labels:
+    {{- include "rag-protection.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qdrant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "rag-protection.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: qdrant
+  template:
+    metadata:
+      labels:
+        {{- include "rag-protection.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: qdrant
+    spec:
+      containers:
+        - name: qdrant
+          image: {{ .Values.qdrant.image | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.qdrant.port }}
+          {{- if .Values.qdrant.persistence.enabled }}
+          volumeMounts:
+            - name: qdrant-storage
+              mountPath: /qdrant/storage
+          {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      {{- if .Values.qdrant.persistence.enabled }}
+      volumes:
+        - name: qdrant-storage
+          persistentVolumeClaim:
+            claimName: {{ include "rag-protection.fullname" . }}-qdrant
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rag-protection.fullname" . }}-qdrant
+  labels:
+    {{- include "rag-protection.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qdrant
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.qdrant.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "rag-protection.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: qdrant
+---
+{{- if .Values.qdrant.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "rag-protection.fullname" . }}-qdrant
+  labels:
+    {{- include "rag-protection.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qdrant
+spec:
+  accessModes:
+    - {{ .Values.qdrant.persistence.accessMode }}
+  {{- if .Values.qdrant.persistence.storageClass }}
+  storageClassName: {{ .Values.qdrant.persistence.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.qdrant.persistence.size }}
+{{- end }}
+{{- end }}

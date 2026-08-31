@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 148" fill="none" aria-labelledby="logoTitle">
+  <title id="logoTitle">Marifort Gate by Marifort</title>
+  <rect width="200" height="148" fill="#07111d"/>
+  <g transform="translate(100 48) scale(2.015) translate(-32 -23.5)" stroke="#ebf2fb" fill="none" stroke-linejoin="round">
+      <path stroke-width="1.3" d="M32 5l-15 6v12.5c0 9 15 18.5 15 18.5s15-9.5 15-18.5V11L32 5z"/>
+      <path stroke-width="1.05" d="M20 12.5h24"/>
+      <path stroke-width="1.05" stroke-linecap="round" d="M32 12.5l-7 8h14"/>
+      <path stroke-width="1" stroke-linecap="round" d="M22 24h20M23 30h18M24.5 36h15"/>
+      <path stroke-width="0.95" opacity="0.5" d="M32 12.5v22"/>
+  </g>
+  <text x="100" y="124" text-anchor="middle" fill="#ebf2fb" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="300" letter-spacing="6.5">MARIFORT GATE</text>
+  <text x="100" y="140" text-anchor="middle" fill="#91a6c3" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="300" letter-spacing="5.2">BY MARIFORT</text>
+</svg>

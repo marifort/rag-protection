@@ -1,0 +1,29 @@
+# Demo-honest two-pod slice — not E4.2 (no shared audit file, no policy
+# broadcast, no rolling zero-downtime, no shared rate limits).
+#
+# What this proves: two proxy pods, shared Qdrant, same injection verdict.
+# What this does not prove: production HA, unified in-cluster audit, CHALLENGE
+# queue / extraction-monitor / quota sharing, or reload without restart.
+#
+# Usage (kind EE, after the image is loaded):
+#   bash tools/helm_start.sh --ha-demo --no-build --no-load
+#   bash tools/helm_ha_demo_smoke.sh
+#
+# Overlay last so it wins over values-ee-local.yaml (hybrid → vector).
+# That store switch is proxy.storeBackend here, not .env RAG_STORE_BACKEND.
+# Chart fail() refuses replicaCount > 1 with sqlite, hybrid, RWO PVC, or a
+# shared JSONL path. Canonical: docs/ee/phases/e4/E4_2_REPLICAS.md
+
+replicaCount: 2
+
+persistence:
+  enabled: false
+
+proxy:
+  storeBackend: vector
+  audit:
+    file: ""
+    deadLetterFile: ""
+
+qdrant:
+  enabled: true

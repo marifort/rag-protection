@@ -1,0 +1,15 @@
+{
+  "hr-payroll-2024": [
+    {"type": "user", "emailAddress": "alice@corp.com", "role": "reader"},
+    {"type": "user", "emailAddress": "hr-lead@corp.com", "role": "writer"}
+  ],
+  "eng-handbook": [
+    {"type": "domain", "domain": "corp.com", "role": "reader"}
+  ],
+  "public-faq": [
+    {"type": "anyone", "role": "reader"}
+  ],
+  "unmapped-secret": [
+    {"type": "user", "emailAddress": "contractor@vendor.io", "role": "reader"}
+  ]
+}

@@ -1,0 +1,63 @@
+version: 1
+
+audit:
+  retention_days: 90
+  scrub_export: true
+  max_export_rows: 5000
+
+tenant:
+  quotas:
+    queries_per_minute: 0
+    burst: 10
+
+dlp:
+  enable_ner: true
+  labels: [PCI, PHI]
+
+input:
+  challenge_threshold: 0.4
+  block_threshold: 0.8
+  # CHALLENGE verdict handling: block | allow | audit_only
+  challenge_mode: allow
+  strip_hidden_chars: true
+  strip_html_comments: true
+  redact_pii: true
+  redact_secrets: true
+  ml_injection_enabled: true
+  ml_injection_threshold: 0.72
+
+output:
+  challenge_threshold: 0.5
+  block_threshold: 0.85
+  challenge_mode: block
+  min_citation_coverage: 0.15
+  block_system_prompt_leak: true
+  per_claim_citations: true
+  entailment_check: true
+  entailment_threshold: 0.6
+
+network:
+  allowed_domains: []
+  block_private_ranges: true
+
+# Optional connector scheduler (E5.7)
+# connectors:
+#   enabled: true
+#   schedule_interval_minutes: 60
+#   # deny = fail-closed when source permissions cannot map to ACL groups (default)
+#   # all_staff = legacy permissive fallback
+#   unmapped_permissions: deny
+#   jobs:
+#     - connector: google_drive
+#       tenant_id: default
+#       source_id: payroll-sheet-001
+#       fixture_path: drive_file.json
+# Or set RAG_CONNECTOR_SCHEDULE_FILE=config/connectors/schedule.yaml
+
+llm:
+  base_url: http://model-runner.docker.internal/engines/v1
+  model: ai/gemma3-qat
+  api_key: not-needed
+  timeout_seconds: 90
+  max_tokens: 512
+  temperature: 0.2

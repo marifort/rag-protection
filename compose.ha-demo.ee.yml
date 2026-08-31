@@ -1,0 +1,15 @@
+# EE image + live package mounts for compose.ha-demo.yml.
+# Applied after compose.ee.yml. Requires rag-protection-enterprise/.
+
+services:
+  rag-protection-proxy-a:
+    image: rag-protection-proxy:ee
+    volumes:
+      - ./rag-protection-enterprise/rag_protection_enterprise:/app/rag_protection_enterprise:ro
+      - ./docs/compliance:/app/docs/compliance:ro
+
+  rag-protection-proxy-b:
+    image: rag-protection-proxy:ee
+    volumes:
+      - ./rag-protection-enterprise/rag_protection_enterprise:/app/rag_protection_enterprise:ro
+      - ./docs/compliance:/app/docs/compliance:ro

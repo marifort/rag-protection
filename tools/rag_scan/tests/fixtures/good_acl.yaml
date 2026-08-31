@@ -1,0 +1,20 @@
+default_groups:
+  - all-staff
+
+jwt_groups_claim: groups
+jwt_secret: ""
+
+oidc:
+  enabled: true
+  issuer: "https://example.okta.com/oauth2/default"
+  audience: "api://default"
+  jwks_uri: "https://example.okta.com/oauth2/default/v1/keys"
+  groups_claim: groups
+
+demo_users: []
+
+admin_users:
+  - token: prod-rotated-admin-key-do-not-reuse
+    subject: admin.prod
+    roles:
+      - policy_admin

@@ -1,0 +1,3 @@
+version: 1
+network:
+  allowed_domains: "not-a-list"

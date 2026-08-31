@@ -1,0 +1,15 @@
+pack: egress-sample
+version: "1.0.0"
+description: >
+  Community Edition sample egress denylist. Demonstrates the pack format consumed by
+  URLThreatScanner via policy.network. Curated EE denylists and vertical allowlists
+  are an Enterprise Edition entitlement.
+network:
+  block_private_ranges: true
+  allowed_domains: []
+  denied_domains:
+    - evil.example
+    - phish.test
+policy_preset:
+  input_block_threshold: 0.71
+  output_block_threshold: 0.85

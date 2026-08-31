@@ -1,0 +1,16 @@
+[
+  {
+    "document_id": "hr-payroll",
+    "title": "HR Payroll Summary Q1",
+    "allowed_groups": ["hr", "all-staff"],
+    "content": "Total payroll disbursement: $4.2M.",
+    "metadata": {"source": "hr-portal", "classification": "confidential-hr"}
+  },
+  {
+    "document_id": "public-faq",
+    "title": "Company FAQ",
+    "allowed_groups": ["all-staff", "public"],
+    "content": "Support hours are 9-6 Eastern.",
+    "metadata": {"source": "internal-wiki", "classification": "public"}
+  }
+]

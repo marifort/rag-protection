@@ -1,0 +1,84 @@
+# MCP tool gateway — compose overlay (Layer 2 + Layer 3 reference topology)
+#
+# Layer 1 (HTTP invoke + mock backends): base compose only
+#   bash tools/docker_start.sh
+#
+# Layer 2 — real MCP filesystem behind gateway (L1-101 + L1-102):
+#   bash tools/docker_start.sh --mcp-tools
+#   bash tools/docker_start.sh --mcp-tools --smoke
+#   bash tools/docker_stop.sh --mcp-tools
+#
+# Raw compose equivalent (CE + MCP):
+#   docker compose -f compose.yml -f compose.mcp-tools.yml --profile mcp-tools up -d --build
+#
+# EE + MCP (compose.ee.yml includes compose.mcp-tools.yml via include):
+#   docker compose -f compose.yml -f compose.ee.yml --profile mcp-tools up -d --build
+#
+# See docs/commercial/COMPOSE_OVERLAYS.md
+#
+# Layer 3 — add mcp-wire when mcp-gateway service exists (see docs/commercial/labs/lab1-mcp/MCP_GATEWAY_DEPLOYMENT.md):
+#   docker compose -f compose.yml -f compose.mcp-tools.yml --profile mcp-tools --profile mcp-wire up -d --build
+#
+# Security: mcp-backends is internal — no host port publish on backend MCP servers (TC-L1-N02).
+
+networks:
+  mcp-backends:
+    internal: true
+
+services:
+  rag-protection-proxy:
+    networks:
+      - default
+      - mcp-backends
+    environment:
+      RAG_TOOL_POLICY_FILE: /app/config/tool_policy.mcp.yaml
+      MCP_FILESYSTEM_URL: http://mcp-filesystem:8000/mcp
+    depends_on:
+      mcp-filesystem:
+        condition: service_started
+        required: false
+
+  # Layer 2 — stdio MCP server exposed as Streamable HTTP via supergateway (internal only).
+  mcp-filesystem:
+    profiles: ["mcp-tools"]
+    build:
+      context: ./docker/mcp-filesystem
+      dockerfile: Dockerfile
+    image: rag-protection-mcp-filesystem:latest
+    container_name: rag-protection-mcp-filesystem
+    restart: unless-stopped
+    command:
+      - --port
+      - "8000"
+      - --outputTransport
+      - streamableHttp
+      - --stdio
+      - mcp-server-filesystem /workspace
+    volumes:
+      - ./examples/agentic/mcp_tool_gateway/demo_workspace:/workspace:ro
+    networks:
+      - mcp-backends
+    # Intentionally no ports — reachable only from rag-protection-proxy on mcp-backends.
+
+  # Layer 3 — MCP wire transport (stdio/SSE). Not implemented; profile reserved for future mcp-gateway image.
+  # Uncomment when mcp-gateway/ exists — see MCP_GATEWAY_DEPLOYMENT.md
+  #
+  # mcp-gateway:
+  #   profiles: ["mcp-wire"]
+  #   build:
+  #     context: ./mcp-gateway
+  #     dockerfile: Dockerfile
+  #   container_name: rag-protection-mcp-gateway
+  #   restart: unless-stopped
+  #   ports:
+  #     - "${MCP_GATEWAY_PORT:-8091}:8091"
+  #   environment:
+  #     RAG_PROTECTION_URL: http://rag-protection-proxy:8090
+  #     MCP_GATEWAY_TRANSPORT: sse
+  #     MCP_GATEWAY_PORT: "8091"
+  #   networks:
+  #     - default
+  #     - mcp-backends
+  #   depends_on:
+  #     rag-protection-proxy:
+  #       condition: service_healthy

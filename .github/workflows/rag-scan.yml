@@ -1,0 +1,49 @@
+# CI gate: fail the PR when the RAG config is unsafe for production.
+#
+# The gate scans the PRODUCTION ACL (acl_policy.prod.yaml) — the file prod
+# deployments actually load (Helm sets RAG_ACL_FILE to it). The dev/demo file
+# (acl_policy.yaml) intentionally ships demo tokens and is NOT scanned here, so
+# the local demo / smoke test / test suite keep working.
+name: rag-scan
+
+on:
+  pull_request:
+    paths:
+      - "rag-protection-proxy/config/**"
+      - "tools/rag_scan/**"
+      - "tools/rag-scan"
+      - ".github/workflows/rag-scan.yml"
+  workflow_dispatch:
+
+jobs:
+  rag-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install runtime deps (config loaders)
+        run: pip install pyyaml pydantic
+
+      - name: Validate dev + prod ACL load
+        run: |
+          bash tools/rag-scan validate --acl rag-protection-proxy/config/acl_policy.yaml
+          bash tools/rag-scan validate --acl rag-protection-proxy/config/acl_policy.prod.yaml
+
+      - name: Scan production config (fail PR on critical)
+        run: |
+          bash tools/rag-scan check \
+            --env prod \
+            --acl rag-protection-proxy/config/acl_policy.prod.yaml \
+            --severity critical \
+            --format junit --output rag-scan.xml
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: rag-scan-report
+          path: rag-scan.xml

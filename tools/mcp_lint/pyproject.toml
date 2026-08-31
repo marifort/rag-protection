@@ -1,0 +1,40 @@
+# Standalone packaging for the mcp-lint MCP manifest linter (A2, lead-gen asset).
+#
+# Install from this directory:
+#   pip install -e tools/mcp_lint            # editable, for development
+#   pip install tools/mcp_lint               # wheel/sdist build
+# This installs the `mcp-lint` console script (entry point below).
+#
+# mcp-lint reuses the shipped PromptInjectionScanner and McpStreamableHttpClient
+# from rag-protection-proxy. When run from a checkout, the proxy is found on
+# PYTHONPATH automatically via the `tools/mcp-lint` wrapper; for an out-of-tree
+# install, also install the proxy (`pip install -e rag-protection-proxy`).
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-lint"
+version = "0.1.0"
+description = "MCP manifest / tool-description linter — shift-left CI gate for MCP servers."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["mcp", "security", "prompt-injection", "ci", "shift-left", "sarif", "lead-gen"]
+dependencies = [
+  "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.0"]
+
+[project.scripts]
+mcp-lint = "mcp_lint.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/marifort/rag-protection"
+Documentation = "https://github.com/marifort/rag-protection/blob/main/tools/mcp_lint/README.md"
+
+[tool.setuptools]
+package-dir = { "mcp_lint" = "." }
+packages = ["mcp_lint", "mcp_lint.reporters"]

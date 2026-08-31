@@ -1,0 +1,39 @@
+Marifort Gate installed.
+
+1. Port-forward the proxy service (restarting wrapper for kind):
+
+  bash tools/helm_port_forward.sh
+  # or: kubectl port-forward svc/{{ include "rag-protection.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+
+2. Smoke the deployment:
+
+  curl -s http://localhost:{{ .Values.service.port }}/health
+  curl -s -X POST http://localhost:{{ .Values.service.port }}/v1/query \
+    -H "Authorization: Bearer employee-demo-token" \
+    -H "Content-Type: application/json" \
+    -d '{"query":"What are support hours?","top_k":4}'
+
+3. Open the operator console:
+
+  http://localhost:{{ .Values.service.port }}/ui
+
+Local Compose-parity (EE image, Auth0 ACL, Drive/.env entitlements):
+
+  bash tools/helm_start.sh
+  bash tools/helm_stop.sh
+
+{{- if .Values.qdrant.enabled }}
+
+Qdrant vector backend is enabled (RAG_STORE_BACKEND={{ .Values.proxy.storeBackend }}).
+{{- end }}
+
+{{- if gt (int .Values.replicaCount) 1 }}
+
+Two-pod demo slice (replicaCount={{ .Values.replicaCount }}). This is not E4.2 HA.
+Audit JSONL is off; policy reload is a rollout restart of both pods; rate limits,
+extraction monitor, and CHALLENGE queues stay per-pod.
+
+  bash tools/helm_ha_demo_smoke.sh
+{{- end }}
+
+Admin API key is set via values.proxy.adminApiKey — change before production.

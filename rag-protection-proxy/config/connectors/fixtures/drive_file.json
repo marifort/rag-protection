@@ -1,0 +1,11 @@
+{
+  "id": "payroll-sheet-001",
+  "name": "Q2 Payroll Summary",
+  "content": "Confidential payroll data for HR review only. Total headcount: 42.",
+  "permissions": [
+    {"type": "user", "emailAddress": "hr@company.com", "role": "reader"}
+  ],
+  "group_map": {
+    "hr@company.com": "hr"
+  }
+}

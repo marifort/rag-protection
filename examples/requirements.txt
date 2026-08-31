@@ -1,0 +1,8 @@
+# Dependencies for examples/python and examples/langchain (E7.2–E7.3).
+# Installed by: bash tools/setup_venv.sh  (or: pip install -r examples/requirements.txt)
+# httpx is already in rag-protection-proxy/requirements.txt (proxy + client).
+# Python >= 3.11. Docs: docs/ce/guide/LOCAL_SETUP.md
+langchain-core>=0.3.0
+# Optional: official SDK for experiments against cloud Pinecone.
+# Pattern C local demo uses httpx against compose profile pinecone (pinecone-index).
+pinecone>=6.0.0,<9

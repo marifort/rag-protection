@@ -1,0 +1,32 @@
+# Lab 1 — Agent / MCP tool gateway (example policy)
+
+Copy to `rag-protection-proxy/config/tool_policy.yaml` or point
+`RAG_TOOL_POLICY_FILE` at this file.
+
+```yaml
+defaults:
+  challenge_threshold: 0.4
+  block_threshold: 0.8
+  challenge_mode: block
+
+tools:
+  send_email:
+    description: Send an email message to one or more recipients.
+    backend: mock_email
+    allowed_groups: [all-staff]
+    blocked_domains: [personal-email.com]
+
+  read_file:
+    description: Read a file from the sandbox filesystem.
+    backend: mock_files
+    allowed_groups: [engineering, hr, executives]
+    blocked_patterns: ["../", "/etc/"]
+
+  run_sql:
+    description: Execute a read-only SQL query against the analytics database.
+    backend: mock_sql
+    allowed_groups: [data-platform, admin]
+    blocked_patterns: ["DROP TABLE", "DELETE FROM"]
+```
+
+See [README.md](./README.md) for curl examples and demo script.

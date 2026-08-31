@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Convenience wrapper for the rag-ground grounding checker.
+#
+# Runs `python -m rag_ground` from any directory by putting tools/ on PYTHONPATH
+# and preferring the repo virtualenv. The tool reuses the proxy's shipped
+# verify_citations guardrail, which is resolved automatically from the sibling
+# rag-protection-proxy/ checkout.
+#
+# Examples (run from repo root):
+#   tools/rag-ground check --answer tools/rag_ground/examples/answer.txt --sources tools/rag_ground/examples/sources.json
+#   tools/rag-ground check --jsonl tools/rag_ground/examples/eval.jsonl --format junit --output grounding.xml
+#   tools/rag-ground check --answer tools/rag_ground/examples/answer.txt --sources tools/rag_ground/examples/sources.json --entailment
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [[ -x "${REPO_ROOT}/.venv/bin/python" ]]; then
+  PY="${REPO_ROOT}/.venv/bin/python"
+else
+  PY="$(command -v python3 || command -v python)"
+fi
+
+PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:${PYTHONPATH}}" exec "${PY}" -m rag_ground "$@"

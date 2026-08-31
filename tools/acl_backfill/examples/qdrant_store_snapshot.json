@@ -1,0 +1,22 @@
+{
+  "public-faq": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "eng-runbook": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "hr-payroll": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "exec-strategy": {
+    "allowed_groups": [],
+    "metadata": {}
+  },
+  "customer-feedback-poisoned": {
+    "allowed_groups": [],
+    "metadata": {}
+  }
+}

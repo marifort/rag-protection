@@ -1,0 +1,70 @@
+# Production ACL policy.
+#
+# This file is the secure-by-default ACL used by production deployments
+# (Helm sets RAG_ACL_FILE to this path) and is what `rag-scan check --env prod`
+# validates. It intentionally ships NO static demo bearer tokens and NO demo
+# admin keys: callers authenticate against the corporate IdP via OIDC, and the
+# operator admin key is injected from a secret manager (RAG_ADMIN_API_KEY).
+#
+# For local development / demos use config/acl_policy.yaml instead (it carries
+# the demo_users / admin_users fixtures the smoke test and demo rely on).
+
+default_groups:
+  - all-staff
+
+group_hierarchy:
+  executives:
+    - all-staff
+  hr:
+    - all-staff
+  engineering:
+    - all-staff
+  data-platform:
+    - all-staff
+  admin:
+    - data-platform
+    - all-staff
+
+jwt_groups_claim: groups
+# JWT HS256 secret is supplied via RAG_JWT_SECRET (secret manager), never in-file.
+jwt_secret: ""
+jwt_algorithms:
+  - HS256
+
+# Corporate IdP (Okta, Azure AD, etc.). Values below are placeholders — set the
+# real issuer/audience/jwks_uri here or override via RAG_OIDC_* env vars before
+# going live. OIDC is the only caller-authentication path in production.
+oidc:
+  enabled: true
+  issuer: "https://REPLACE-ME.okta.com/oauth2/default"
+  audience: "api://rag-protection"
+  jwks_uri: "https://REPLACE-ME.okta.com/oauth2/default/v1/keys"
+  algorithms:
+    - RS256
+  groups_claim: groups
+  roles_claim: roles
+  # Map IdP groups -> operator admin roles. Replace with your real IdP groups.
+  admin_role_map:
+    policy_admin: [rag-platform-admins]
+    audit_reader: [rag-soc-readers]
+    audit_debug_reader: [rag-soc-debug]
+    ingest_admin: [rag-content-admins]
+  admin_global_groups: [rag-platform-admins]
+
+# No static demo bearer tokens in production (ACL001). Callers use OIDC.
+demo_users: []
+
+# No shipped demo admin keys in production (SEC001). A break-glass operator key
+# may be injected at runtime via RAG_ADMIN_API_KEY (secret manager); IdP-based
+# admin access is granted via oidc.admin_role_map above.
+admin_users: []
+
+# SCIM group sync — enable with a live endpoint + RAG_SCIM_BEARER_TOKEN if used.
+scim:
+  enabled: false
+  base_url: ""
+  bearer_token: ""
+  poll_interval_seconds: 300
+
+# Multi-tenant policy partitions (E2.5) — add per-tenant policy files as needed.
+tenants: {}
