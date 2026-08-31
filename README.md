@@ -147,9 +147,8 @@ compose.ci.yml            No Model Runner — GitHub Actions and BYO LLM
 
 ## Related
 
-[MCP Security Proxy](https://github.com/marifort/mcp-security-proxy) governs AI *actions* (MCP tool
-calls). This repository governs AI *retrieval*. Same pattern — identity and policy, decision, audit
-trail — at two layers.
+[SOC Governance](https://github.com/marifort/soc-governance) governs AI *actions* (MCP tool-call
+policy, human-gated SIEM response, forensics). This repository governs AI *retrieval*.
 
 ## License
 
