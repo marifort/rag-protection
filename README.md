@@ -149,5 +149,5 @@ compose.ci.yml            No Model Runner — GitHub Actions and BYO LLM
 
 ## License
 
-**Marifort Gate** Community Edition — [MIT](LICENSE) — Copyright (c) 2024-2026 **Marifort Systems Inc.**  
+**Marifort Gate** Community Edition — [MIT](LICENSE) — Copyright (c) 2026 **Marifort Systems Inc.**  
 Enterprise Edition is a separate proprietary package — see [ENTERPRISE.md](ENTERPRISE.md).

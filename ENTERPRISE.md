@@ -33,4 +33,4 @@ Optional Compose overlay `compose.ee.yml` documents how an EE image is built **w
 
 - Email: [support@marifort.com](mailto:support@marifort.com)
 
-**Copyright:** © 2024-2026 Marifort Systems Inc. Community Edition is MIT; Enterprise Edition is proprietary.
+**Copyright:** © 2026 Marifort Systems Inc. Community Edition is MIT; Enterprise Edition is proprietary.
