@@ -145,6 +145,12 @@ compose.yml               CE stack (Docker Model Runner)
 compose.ci.yml            No Model Runner — GitHub Actions and BYO LLM
 ```
 
+## Related
+
+[MCP Security Proxy](https://github.com/marifort/mcp-security-proxy) governs AI *actions* (MCP tool
+calls). This repository governs AI *retrieval*. Same pattern — identity and policy, decision, audit
+trail — at two layers.
+
 ## License
 
 **Marifort Gate** Community Edition — [MIT](LICENSE) — Copyright (c) 2024-2026 **Marifort Systems Inc.**  
