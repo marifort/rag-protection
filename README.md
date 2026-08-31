@@ -147,6 +147,13 @@ compose.yml               CE stack (Docker Model Runner)
 compose.ci.yml            No Model Runner — GitHub Actions and BYO LLM
 ```
 
+## Related
+
+[SOC Governance](https://github.com/sergueifedotov/soc-governance) governs AI *actions* (MCP tool-call
+policy, human-gated SIEM response, forensics). The MCP tool-call gateway is also at
+[mcp-security-proxy](https://github.com/sergueifedotov/mcp-security-proxy). This repository governs AI
+*retrieval*.
+
 ## License
 
 **Marifort Gate** Community Edition — [MIT](LICENSE) — Copyright (c) 2026 **Marifort Systems Inc.**  
