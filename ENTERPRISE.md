@@ -31,6 +31,6 @@ Optional Compose overlay `compose.ee.yml` documents how an EE image is built **w
 
 **Vendor:** Marifort Systems Inc., Ontario, Canada
 
-- Email: [support@marifort.com](mailto:support@marifort.com)
+For enterprise licensing, custom RAG/MCP integration, or an AI security assessment: [support@marifort.com](mailto:support@marifort.com).
 
 **Copyright:** © 2026 Marifort Systems Inc. Community Edition is MIT; Enterprise Edition is proprietary.

@@ -41,6 +41,12 @@ flowchart TD
 
 Depth: [security](docs/ce/security/README.md) · System view: [architecture](docs/shared/architecture.md) · Feature card: [#1 ACL + pipeline](docs/ce/features/01-acl-pipeline.md)
 
+## Threat coverage
+
+Aligns with OWASP LLM risks that show up in RAG and tool-using agents (prompt injection, sensitive disclosure, excessive agency). Heuristic scanners plus fail-closed gates — not a certification, and not full OWASP or ATLAS coverage.
+
+Depth: [security](docs/ce/security/README.md)
+
 ## Documentation
 
 | Document | Contents |
@@ -250,6 +256,10 @@ compose.ci.yml            No Model Runner — GitHub Actions and BYO LLM
 policy, human-gated SIEM response, forensics). The MCP tool-call gateway is also at
 [mcp-security-proxy](https://github.com/sergueifedotov/mcp-security-proxy). This repository governs AI
 *retrieval*.
+
+## Contact
+
+For enterprise licensing, custom RAG/MCP integration, or an AI security assessment: [support@marifort.com](mailto:support@marifort.com). See [ENTERPRISE.md](ENTERPRISE.md).
 
 ## License
 
