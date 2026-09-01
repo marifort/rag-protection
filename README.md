@@ -110,17 +110,16 @@ python3 --version   # 3.11+
 docker --version
 ```
 
-From a clone, the same host packages (not Docker) can be installed with `bash tools/ce/install_host_deps.sh --apply`. Dry-run (print commands only): omit `--apply`.
-
 ### 2. Clone and configure
 
 ```bash
 git clone https://github.com/marifort/rag-protection.git
 cd rag-protection
-bash tools/ce/bootstrap.sh
+bash tools/ce/install_host_deps.sh --apply   # Git, Node 20+, Python 3.11+ (not Docker)
+bash tools/ce/bootstrap.sh                   # .env, .venv, React console
 ```
 
-`bootstrap.sh` copies `.env.example` → `.env` when `.env` is missing, creates repo-root `.venv`, and builds the React console (`npm ci` + `npm run build`). Equivalent:
+`install_host_deps.sh` installs missing Git / Node / Python for this OS (Homebrew or apt). Omit `--apply` to print the commands only; it does **not** install Docker Desktop. `bootstrap.sh` copies `.env.example` → `.env` when `.env` is missing, creates repo-root `.venv`, and builds the React console (`npm ci` + `npm run build`). Equivalent:
 
 ```bash
 cp -n .env.example .env
@@ -145,7 +144,7 @@ If compose fails with `'models' support requires Docker Model plugin`, Model Run
 
 ### No Docker Desktop (Linux Engine, Colima, CI)
 
-Install host packages and run `bash tools/ce/bootstrap.sh` first (`.env`, venv, console). `compose.yml` cannot start without the Model plugin. Use `compose.ci.yml` and point at an **OpenAI-compatible** chat API in `.env`. From inside the container, `localhost` is the proxy — use `host.docker.internal` for an LLM on the host, or a public HTTPS URL for a hosted API.
+Install host packages (`bash tools/ce/install_host_deps.sh --apply`) and run `bash tools/ce/bootstrap.sh` first (`.env`, venv, console). `compose.yml` cannot start without the Model plugin. Use `compose.ci.yml` and point at an **OpenAI-compatible** chat API in `.env`. From inside the container, `localhost` is the proxy — use `host.docker.internal` for an LLM on the host, or a public HTTPS URL for a hosted API.
 
 ```bash
 # bootstrap.sh already copied .env; edit it:
@@ -237,9 +236,10 @@ docs/ce/ · docs/shared/   CE product documentation
 examples/                 LangChain / Python / MCP samples
 deploy/helm/              Baseline Helm chart
 deploy/siem/              SIEM pack (#5)
-tools/ce/bootstrap.sh     .env + venv + console
-tools/build_ce.sh         Console build
-tools/docker_start.sh     Compose stack (CE default)
+tools/ce/install_host_deps.sh  Git / Node / Python (not Docker)
+tools/ce/bootstrap.sh          .env + venv + console
+tools/build_ce.sh              Console build
+tools/docker_start.sh          Compose stack (CE default)
 compose.yml               CE stack (Docker Model Runner)
 compose.ci.yml            No Model Runner — GitHub Actions and BYO LLM
 ```
