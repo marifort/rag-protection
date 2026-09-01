@@ -19,7 +19,7 @@ Docker-only evaluators can skip this page and use the [root README](../../../REA
 
 **Install the host packages** (Git, Node 20+, Python 3.11+) before `cp .env.example .env`. Copy-paste commands also live on the [root README Quick start](../../../README.md).
 
-**macOS (Homebrew):** `brew install git node python@3.13` — Docker Desktop is `brew install --cask docker`, then **Settings → AI → Enable Docker Model Runner**.
+**macOS (Homebrew):** `cd ~ && brew install git node python@3.13` — Docker Desktop is `brew install --cask docker`, then **Settings → AI → Enable Docker Model Runner**. If brew says `$PWD must be set`, this terminal’s folder was deleted; `cd ~` and retry.
 
 **Ubuntu / Debian / WSL2:** `sudo apt-get install -y git python3 python3-venv python3-pip curl ca-certificates gnupg`, then Node 20 from NodeSource (`node_20.x` — distro `nodejs` is often too old). Docker Desktop or Engine is separate.
 

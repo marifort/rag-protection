@@ -5,6 +5,18 @@
 # start Docker (see tools/docker_start.sh).
 set -euo pipefail
 
+if ! pwd >/dev/null 2>&1; then
+  echo "==> This terminal's folder no longer exists; switching to \$HOME" >&2
+  cd "${HOME}"
+  export PWD
+fi
+if [[ "${BASH_SOURCE[0]}" != /* && ! -e "${BASH_SOURCE[0]}" ]]; then
+  echo "ERROR: this terminal's directory was deleted, so a relative script path will not work." >&2
+  echo "       Run:  cd ~" >&2
+  echo "       Then: cd /path/to/rag-protection && bash tools/ce/bootstrap.sh" >&2
+  exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 CHECK_ONLY=0

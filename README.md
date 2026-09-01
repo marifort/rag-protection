@@ -74,10 +74,13 @@ Host tests and `bash tools/build_ce.sh` run **on the machine**, not inside Compo
 **macOS (Homebrew):**
 
 ```bash
+cd ~
 brew install git node python@3.13
 brew install --cask docker
 open -a Docker
 ```
+
+`cd ~` matters: Homebrew errors with `$PWD must be set to run brew` if this terminal is still inside a folder that was deleted (getcwd). If you already see that, run `cd ~` and retry — do not stay in the dead `rag-protection` prompt.
 
 In Docker Desktop: **Settings → AI → Enable Docker Model Runner**. If `python3 --version` is still 3.9, use `PYTHON=python3.13` with the bootstrap below.
 

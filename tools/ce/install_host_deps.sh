@@ -7,6 +7,20 @@
 # Default is dry-run (prints commands). Pass --apply to run them.
 set -euo pipefail
 
+# Homebrew (`$PWD must be set`) and relative script paths fail if this
+# terminal is sitting in a folder that was deleted (getcwd ENOENT).
+if ! pwd >/dev/null 2>&1; then
+  echo "==> This terminal's folder no longer exists; switching to \$HOME" >&2
+  cd "${HOME}"
+  export PWD
+fi
+if [[ "${BASH_SOURCE[0]}" != /* && ! -e "${BASH_SOURCE[0]}" ]]; then
+  echo "ERROR: this terminal's directory was deleted, so a relative script path will not work." >&2
+  echo "       Run:  cd ~" >&2
+  echo "       Then: cd /path/to/rag-protection && bash tools/ce/install_host_deps.sh" >&2
+  exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 APPLY=0
@@ -94,6 +108,8 @@ report_status() {
 print_macos() {
   cat <<'EOS'
 # macOS (Homebrew) — Git, Node 20+, Python 3.13
+# cd ~ first: brew refuses to run if this terminal's folder was deleted.
+cd ~
 brew install git node python@3.13
 
 # Docker Desktop is a separate GUI app (Model Runner lives there):
@@ -123,6 +139,9 @@ EOS
 
 apply_macos() {
   command -v brew >/dev/null 2>&1 || die "Homebrew not found. Install from https://brew.sh then re-run."
+  # brew requires a real PWD; do not run it from a deleted clone directory.
+  cd "${HOME}"
+  export PWD
   local pkg
   for pkg in git node python@3.13; do
     if brew list --formula "${pkg}" >/dev/null 2>&1; then
