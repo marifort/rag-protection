@@ -5,6 +5,35 @@
 **Repo:** `rag-protection-proxy` — **public MIT** at launch.  
 **Package:** `rag-protection-proxy` · **Console:** five workspaces (Overview, Query Lab, Documents & Ingest, Tool Gateway, Audit Log).
 
+## Query flow
+
+Every `POST /v1/query` (Query Lab and API) runs this ordered CE pipeline. The LLM is skipped when the question is blocked, ACL retrieval is empty, or every chunk fails the scan. Optional CE controls (canary docs, extraction monitor) hook after retrieval — see the feature cards.
+
+```mermaid
+flowchart TD
+  Q[POST /v1/query] --> I[Resolve identity]
+  I --> S[Scan user query]
+  S --> SB{Blocked?}
+  SB -->|Yes| QB[Block query]
+  SB -->|No| R[ACL-filtered search]
+  R --> H{Hits?}
+  H -->|No| NM[No-match message]
+  H -->|Yes| C[Scan chunks]
+  C --> CL{Chunks left?}
+  CL -->|No| CB[Block all chunks]
+  CL -->|Yes| X[Isolate context]
+  X --> L[Call LLM]
+  L --> V[Verify citations]
+  V --> G{Grounded?}
+  G -->|No| CF[Safe fallback]
+  G -->|Yes| O[Scan answer]
+  O --> OB{Blocked?}
+  OB -->|Yes| OF[Block output]
+  OB -->|No| D[Return and audit]
+```
+
+Depth: [security/README.md](security/README.md) · System view: [shared/architecture.md](../shared/architecture.md) · Feature card: [#1 ACL + pipeline](features/01-acl-pipeline.md)
+
 ## Which doc?
 
 Same `#N` appears in several places on purpose. Pick by **job**, not by filename similarity.

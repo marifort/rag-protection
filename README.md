@@ -12,6 +12,35 @@ This repository is the **Community Edition (CE)** — MIT. It **builds, tests, a
 
 Enterprise Edition (connectors, pgvector, premium operator UX) is a **separate commercial package**. See [ENTERPRISE.md](ENTERPRISE.md).
 
+## Query flow
+
+Every `POST /v1/query` (Query Lab and API) runs this ordered CE pipeline. The LLM is skipped when the question is blocked, ACL retrieval is empty, or every chunk fails the scan. Optional CE controls (canary docs, extraction monitor) hook after retrieval — see the [feature cards](docs/ce/features/).
+
+```mermaid
+flowchart TD
+  Q[POST /v1/query] --> I[Resolve identity]
+  I --> S[Scan user query]
+  S --> SB{Blocked?}
+  SB -->|Yes| QB[Block query]
+  SB -->|No| R[ACL-filtered search]
+  R --> H{Hits?}
+  H -->|No| NM[No-match message]
+  H -->|Yes| C[Scan chunks]
+  C --> CL{Chunks left?}
+  CL -->|No| CB[Block all chunks]
+  CL -->|Yes| X[Isolate context]
+  X --> L[Call LLM]
+  L --> V[Verify citations]
+  V --> G{Grounded?}
+  G -->|No| CF[Safe fallback]
+  G -->|Yes| O[Scan answer]
+  O --> OB{Blocked?}
+  OB -->|Yes| OF[Block output]
+  OB -->|No| D[Return and audit]
+```
+
+Depth: [security](docs/ce/security/README.md) · System view: [architecture](docs/shared/architecture.md) · Feature card: [#1 ACL + pipeline](docs/ce/features/01-acl-pipeline.md)
+
 ## Documentation
 
 | Document | Contents |
