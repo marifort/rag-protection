@@ -4,6 +4,11 @@ Community Edition scripts and CLIs. **Public MIT** at CE launch.
 
 Put **new** CE-only shell scripts here (`tools/ce/<name>.sh`). Do not add new files next to the legacy flat scripts in `tools/*.sh` — that tree is frozen (see [edition/README.md](../../docs/ce/README.md)).
 
+| Path | Product |
+|------|---------|
+| `tools/ce/install_host_deps.sh` | Git, Node 20+, Python 3.11+ — print or `--apply` (not Docker) |
+| `tools/ce/bootstrap.sh` | `.env`, `.venv`, React console (`build_ce.sh --ci`) |
+
 Existing CE CLIs already live in their own packages (keep using those paths):
 
 | Path | Product |

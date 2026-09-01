@@ -60,13 +60,77 @@ Depth: [security](docs/ce/security/README.md) · System view: [architecture](doc
 
 **Default path:** Docker Desktop **4.40+** with [Docker Model Runner](https://docs.docker.com/ai/model-runner/) enabled. No private GitHub repo and no `rag-protection-enterprise/` directory are required.
 
-1. Install or update [Docker Desktop](https://docs.docker.com/desktop/).
-2. **Settings → AI → Enable Docker Model Runner** (see Docker’s page if the menu moved).
-3. Then:
+Host tests and `bash tools/build_ce.sh` run **on the machine**, not inside Compose: you need **Git**, **Node.js 20+** (npm), and **Python 3.11+** (3.13 preferred) before the `.env` copy. Docker Desktop is separate (GUI + Model Runner).
+
+### 1. Install software
+
+| Tool | Version | Used for |
+|------|---------|----------|
+| Git | any recent | Clone |
+| Node.js + npm | **20+** (CI uses 20) | React console (`tools/build_ce.sh`) |
+| Python | **3.11+** (CI / image: **3.13**) | `.venv`, pytest, `python3 -m json.tool` |
+| Docker Desktop | **4.40+** | Compose + Model Runner |
+
+**macOS (Homebrew):**
 
 ```bash
-cp .env.example .env
-bash tools/build_ce.sh              # React console (not run by docker_start.sh)
+brew install git node python@3.13
+brew install --cask docker
+open -a Docker
+```
+
+In Docker Desktop: **Settings → AI → Enable Docker Model Runner**. If `python3 --version` is still 3.9, use `PYTHON=python3.13` with the bootstrap below.
+
+**Ubuntu / Debian / Windows WSL2:**
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git python3 python3-venv python3-pip curl ca-certificates gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+  | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" \
+  | sudo tee /etc/apt/sources.list.d/nodesource.list
+sudo apt-get update
+sudo apt-get install -y nodejs
+```
+
+Install [Docker Desktop](https://docs.docker.com/desktop/) (Model Runner) or [Docker Engine](https://docs.docker.com/engine/install/) (`compose.ci.yml` only — see below). Native Windows `cmd` is not supported.
+
+Confirm:
+
+```bash
+git --version
+node -v          # v20 or newer
+npm -v
+python3 --version   # 3.11+
+docker --version
+```
+
+From a clone, the same host packages (not Docker) can be installed with `bash tools/ce/install_host_deps.sh --apply`. Dry-run (print commands only): omit `--apply`.
+
+### 2. Clone and configure
+
+```bash
+git clone https://github.com/marifort/rag-protection.git
+cd rag-protection
+bash tools/ce/bootstrap.sh
+```
+
+`bootstrap.sh` copies `.env.example` → `.env` when `.env` is missing, creates repo-root `.venv`, and builds the React console (`npm ci` + `npm run build`). Equivalent:
+
+```bash
+cp -n .env.example .env
+PYTHON=python3.13 bash tools/setup_venv.sh   # or python3 if it is already 3.11+
+source .venv/bin/activate
+bash tools/build_ce.sh --ci
+```
+
+`--check` only verifies Git / Node / Python. `--skip-venv` or `--skip-console` skip those steps. Depth: [docs/ce/guide/LOCAL_SETUP.md](docs/ce/guide/LOCAL_SETUP.md).
+
+### 3. Start the stack
+
+```bash
 bash tools/docker_start.sh --smoke
 curl -sf http://localhost:8090/health | python3 -m json.tool
 open http://localhost:8090/ui
@@ -78,10 +142,10 @@ If compose fails with `'models' support requires Docker Model plugin`, Model Run
 
 ### No Docker Desktop (Linux Engine, Colima, CI)
 
-`compose.yml` cannot start without the Model plugin. Use `compose.ci.yml` and point at an **OpenAI-compatible** chat API in `.env`. From inside the container, `localhost` is the proxy — use `host.docker.internal` for an LLM on the host, or a public HTTPS URL for a hosted API.
+Install host packages and run `bash tools/ce/bootstrap.sh` first (`.env`, venv, console). `compose.yml` cannot start without the Model plugin. Use `compose.ci.yml` and point at an **OpenAI-compatible** chat API in `.env`. From inside the container, `localhost` is the proxy — use `host.docker.internal` for an LLM on the host, or a public HTTPS URL for a hosted API.
 
 ```bash
-cp .env.example .env
+# bootstrap.sh already copied .env; edit it:
 # Edit .env, for example:
 #   RAG_LLM_BASE_URL=http://host.docker.internal:11434/v1
 #   RAG_LLM_MODEL=llama3
@@ -114,7 +178,7 @@ bash tools/docker_stop.sh --volumes       # reset corpus
 
 **Full walkthrough (versions, libraries, verify, troubleshooting):** [docs/ce/guide/LOCAL_SETUP.md](docs/ce/guide/LOCAL_SETUP.md).
 
-**Python:** 3.11 or newer (`requires-python = ">=3.11"`). **CI and the CE Docker image use 3.13** — prefer 3.13 locally so wheels match CI. Newer 3.x is accepted if `python3 --version` is 3.11+. `tools/setup_venv.sh` uses `${PYTHON:-python3}` and refuses anything older than 3.11.
+**Python:** 3.11 or newer (`requires-python = ">=3.11"`). **CI and the CE Docker image use 3.13** — prefer 3.13 locally so wheels match CI. Newer 3.x is accepted if `python3 --version` is 3.11+. Install Python (and Node, if you will rebuild the console) with [Quick start §1](#1-install-software) or `bash tools/ce/install_host_deps.sh --apply`. `tools/setup_venv.sh` uses `${PYTHON:-python3}` and refuses anything older than 3.11. `bash tools/ce/bootstrap.sh` runs that installer plus the console build.
 
 From the repository root (a standalone CE checkout — not a venv that already has Enterprise installed):
 
@@ -170,6 +234,7 @@ docs/ce/ · docs/shared/   CE product documentation
 examples/                 LangChain / Python / MCP samples
 deploy/helm/              Baseline Helm chart
 deploy/siem/              SIEM pack (#5)
+tools/ce/bootstrap.sh     .env + venv + console
 tools/build_ce.sh         Console build
 tools/docker_start.sh     Compose stack (CE default)
 compose.yml               CE stack (Docker Model Runner)

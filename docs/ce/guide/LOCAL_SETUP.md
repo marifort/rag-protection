@@ -17,7 +17,21 @@ Docker-only evaluators can skip this page and use the [root README](../../../REA
 | **Node.js** | 20+ if you rebuild the operator console | CI uses Node **20**. `console/package.json` → `"engines": { "node": ">=20" }`. |
 | **Docker Desktop** | Optional for host-only Python; required for default Compose + Model Runner | 4.40+ with [Docker Model Runner](https://docs.docker.com/ai/model-runner/) (**Settings → AI → Enable Docker Model Runner**). Without Desktop, use `compose.ci.yml` + `RAG_LLM_BASE_URL` or host uvicorn below. |
 
-Check the interpreter that `setup_venv.sh` will use:
+**Install the host packages** (Git, Node 20+, Python 3.11+) before `cp .env.example .env`. Copy-paste commands also live on the [root README Quick start](../../../README.md).
+
+**macOS (Homebrew):** `brew install git node python@3.13` — Docker Desktop is `brew install --cask docker`, then **Settings → AI → Enable Docker Model Runner**.
+
+**Ubuntu / Debian / WSL2:** `sudo apt-get install -y git python3 python3-venv python3-pip curl ca-certificates gnupg`, then Node 20 from NodeSource (`node_20.x` — distro `nodejs` is often too old). Docker Desktop or Engine is separate.
+
+From a clone:
+
+```bash
+bash tools/ce/install_host_deps.sh          # print commands for this OS
+bash tools/ce/install_host_deps.sh --apply  # install missing Git / Node / Python (not Docker)
+bash tools/ce/bootstrap.sh                  # .env, .venv, React console
+```
+
+`install_host_deps.sh` does **not** install Docker Desktop. Check the interpreter that `setup_venv.sh` will use:
 
 ```bash
 python3 --version
