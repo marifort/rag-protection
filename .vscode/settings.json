@@ -25,5 +25,8 @@
   "python.analysis.extraPaths": [
     "${workspaceFolder}/examples"
   ],
-  "markdown.preview.openMarkdownLinks": "inEditor"
+  "markdown.preview.openMarkdownLinks": "inEditor",
+  "workbench.editorAssociations": {
+    "*.xlsx": "xlsxViewer.xlsx"
+  }
 }

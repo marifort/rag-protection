@@ -30,6 +30,10 @@ docs/commercial/internal/CAREER_*.md
 # resolve in Cursor. Not repo content; it would double every docs path.
 edition/templates/docs
 
+# Excel lock / temp files while a workbook is open
+~$*
+*.tmp
+
 # Accidental / local artifacts — not either edition
 /node_modules/
 .cursor/debug-*.log

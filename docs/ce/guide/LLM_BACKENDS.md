@@ -24,6 +24,8 @@ POST {RAG_LLM_BASE_URL}/v1/chat/completions   # otherwise
 | `RAG_LLM_MODEL` | Model name the **server** expects (not a Marifort catalog) |
 | `RAG_LLM_API_KEY` | Bearer token; use `not-needed` for local servers that ignore it |
 
+These three variables are enough for any OpenAI-compatible backend; CE does not require a Marifort-hosted model.
+
 Compose reads these from `.env` (copy [`.env.example`](../README.md)). Host `uvicorn` does not load `.env` unless you source it — `export` the same names.
 
 ---
