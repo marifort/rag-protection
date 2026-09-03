@@ -55,6 +55,7 @@ Depth: [security](docs/ce/security/README.md)
 | [docs/INDEX.md](docs/INDEX.md) | Feature `#1–#31` spine (CE pages here; EE rows → ENTERPRISE.md) |
 | [docs/ce/README.md](docs/ce/README.md) | CE features, tutorials, demos, security, guides |
 | [docs/ce/guide/LOCAL_SETUP.md](docs/ce/guide/LOCAL_SETUP.md) | Local Python venv (version, libraries, activate, verify) |
+| [docs/ce/guide/LLM_BACKENDS.md](docs/ce/guide/LLM_BACKENDS.md) | Model Runner Desktop settings, Compose `models:`, BYO URL |
 | [docs/shared/architecture.md](docs/shared/architecture.md) | System architecture |
 | [docs/ce/guide/ADMIN_GUIDE.md](docs/ce/guide/ADMIN_GUIDE.md) | Operator / admin |
 | [docs/ce/guide/DEVELOPER_GUIDE.md](docs/ce/guide/DEVELOPER_GUIDE.md) | Develop and test |
@@ -146,15 +147,24 @@ open http://localhost:8090/ui
 
 Answers come from the **LLM plus ingested documents**. `GET /health` → `"status": "healthy"` and `"enterprise_installed": false` means the proxy is up — it does **not** mean the model is warm. The first `POST /v1/query` (and `--smoke`) can take a minute while `ai/gemma3-qat` pulls or starts.
 
-If compose fails with `'models' support requires Docker Model plugin`, Model Runner is off or you are not on Docker Desktop.
+If compose fails with `'models' support requires Docker Model plugin`, Model Runner is off or you are not on Docker Desktop. Desktop checkboxes, TCP 12434, and Compose `models:` wiring: [LLM backends — Docker Desktop](docs/ce/guide/LLM_BACKENDS.md#docker-desktop-standard-ce-setup).
+
+### LLM backends
+
+| Path | When | What to set |
+|------|------|-------------|
+| **Docker Model Runner** (default) | Desktop **4.40+**, **Settings → AI → Enable Docker Model Runner** | `compose.yml` / `docker_start.sh` — Compose injects the URL |
+| **Host LLM** (Ollama or any OpenAI-compatible server) | Linux Engine, Colima, no Model plugin, or you already run a local server | `compose.ci.yml` + `RAG_LLM_BASE_URL` / `RAG_LLM_MODEL` |
+| **Hosted API** | You have a key | Same vars + `RAG_LLM_API_KEY` |
+
+Ollama is an example of a host server, not a CE prerequisite. Typical URL from Compose is `http://host.docker.internal:11434/v1` with the model name that server lists. From inside the proxy container, `localhost` is the proxy — not the LLM on the host.
 
 ### No Docker Desktop (Linux Engine, Colima, CI)
 
-Install host packages (`bash tools/ce/install_host_deps.sh --apply`) and run `bash tools/ce/bootstrap.sh` first (`.env`, venv, console). `compose.yml` cannot start without the Model plugin. Use `compose.ci.yml` and point at an **OpenAI-compatible** chat API in `.env`. From inside the container, `localhost` is the proxy — use `host.docker.internal` for an LLM on the host, or a public HTTPS URL for a hosted API.
+Install host packages (`bash tools/ce/install_host_deps.sh --apply`) and run `bash tools/ce/bootstrap.sh` first (`.env`, venv, console). `compose.yml` cannot start without the Model plugin. Use `compose.ci.yml` and point at an **OpenAI-compatible** chat API in `.env`.
 
 ```bash
-# bootstrap.sh already copied .env; edit it:
-# Edit .env, for example:
+# bootstrap.sh already copied .env; edit it, for example:
 #   RAG_LLM_BASE_URL=http://host.docker.internal:11434/v1
 #   RAG_LLM_MODEL=llama3
 #   RAG_LLM_API_KEY=not-needed

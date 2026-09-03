@@ -182,7 +182,7 @@ Tool invocation is API-driven through `POST /v1/tools/invoke`. The CE **Tool Gat
 - Node.js **20** or newer (`console/package.json` `engines`).
 - npm with the committed `console/package-lock.json`.
 - Docker Desktop for image, Compose, Qdrant, MCP, and live-stack checks.
-- An OpenAI-compatible LLM endpoint only for query paths that reach generation.
+- An OpenAI-compatible LLM endpoint only for query paths that reach generation — [LLM_BACKENDS.md](LLM_BACKENDS.md).
 
 ### 3.2 Create the repository virtualenv
 

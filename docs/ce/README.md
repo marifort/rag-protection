@@ -49,6 +49,7 @@ Same `#N` appears in several places on purpose. Pick by **job**, not by filename
 | Look up APIs / matrices / non-claims | [FEATURE_CATALOG.md](FEATURE_CATALOG.md) | Technical reference — **not** the teaching catalog |
 | Follow a multi-feature path | [tutorials/](tutorials/README.md) | Cross-feature walks (T01–T09; T08 → [EE body](../../ENTERPRISE.md)) |
 | Install a local Python venv | [guide/LOCAL_SETUP.md](guide/LOCAL_SETUP.md) | Python version, libraries, activate, verify |
+| Point Compose at an LLM | [guide/LLM_BACKENDS.md](guide/LLM_BACKENDS.md) | Model Runner vs BYO OpenAI-compatible URL |
 | Operate / integrate / develop | [guide/](guide/README.md) | Dev, admin, user, design, functional spec |
 | Explain how clients use RAG + MCP (API · Python · UI) | [product/CLIENT_USAGE.md](../product/CLIENT_USAGE.md) | Plain-English narrative spine with doc links |
 | Sell / deep lab package | [commercial/labs/](../../ENTERPRISE.md) | SPEC, talk track, BOUNDARY (link from card; don’t duplicate knobs) |
@@ -69,7 +70,7 @@ Same `#N` appears in several places on purpose. Pick by **job**, not by filename
 | Feature teaching guides | [learn/](learn/README.md) |
 | 5-min demo scripts | [demos/](demos/) |
 | Local Python venv | [guide/LOCAL_SETUP.md](guide/LOCAL_SETUP.md) |
-| Docker Model Runner / no-Desktop LLM | Root [README.md](../../README.md) |
+| Docker Model Runner / BYO LLM | [guide/LLM_BACKENDS.md](guide/LLM_BACKENDS.md) · root [README.md](../../README.md) |
 | Guides (dev / admin / user) | [guide/README.md](guide/README.md) |
 | Ownership handoff | [shared/PRODUCT_OWNERSHIP_GUIDE.md](../shared/PRODUCT_OWNERSHIP_GUIDE.md) |
 | Admin / operator (CE home) | [guide/ADMIN_GUIDE.md](guide/ADMIN_GUIDE.md) · [settings + tests](guide/ADMIN_SETTINGS_AND_TESTS.md) |

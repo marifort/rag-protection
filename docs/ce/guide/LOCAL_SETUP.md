@@ -4,7 +4,7 @@
 **Goal:** A CE-only Python virtualenv you can activate, test, and run.  
 **Canonical pins:** the requirement files listed below — if this page and a file disagree, the file wins.
 
-Docker-only evaluators can skip this page and use the [root README](../../../README.md). Host pytest, `uvicorn`, and editable installs need the venv.
+Docker-only evaluators can skip this page and use the [root README](../../../README.md). Model Runner vs a host OpenAI-compatible URL (including typical Ollama values): [LLM_BACKENDS.md](LLM_BACKENDS.md). Host pytest, `uvicorn`, and editable installs need the venv.
 
 ---
 
@@ -15,7 +15,7 @@ Docker-only evaluators can skip this page and use the [root README](../../../REA
 | **Python** | **3.11 or newer** | Package marker: `requires-python = ">=3.11"` in [`rag-protection-proxy/pyproject.toml`](../../../rag-protection-proxy/pyproject.toml). **CI and the CE Docker image use 3.13.** Prefer 3.13 locally so wheels match CI. Newer 3.x (for example 3.14) is accepted if `python3 --version` is 3.11+; recreate with 3.13 if pip cannot find wheels. |
 | **bash** | Yes for `tools/*.sh` | macOS, Linux, or Windows **WSL** / Git Bash. Native Windows `cmd` is not supported. |
 | **Node.js** | 20+ if you rebuild the operator console | CI uses Node **20**. `console/package.json` → `"engines": { "node": ">=20" }`. |
-| **Docker Desktop** | Optional for host-only Python; required for default Compose + Model Runner | 4.40+ with [Docker Model Runner](https://docs.docker.com/ai/model-runner/) (**Settings → AI → Enable Docker Model Runner**). Without Desktop, use `compose.ci.yml` + `RAG_LLM_BASE_URL` or host uvicorn below. |
+| **Docker Desktop** | Optional for host-only Python; required for default Compose + Model Runner | 4.40+ with [Docker Model Runner](https://docs.docker.com/ai/model-runner/). **Settings → AI** checkboxes: [LLM_BACKENDS.md — Docker Desktop](LLM_BACKENDS.md#docker-desktop-standard-ce-setup). Without Desktop, use `compose.ci.yml` + `RAG_LLM_BASE_URL` or host uvicorn below. |
 
 **Install the host packages** (Git, Node 20+, Python 3.11+) before `cp .env.example .env`. Copy-paste commands also live on the [root README Quick start](../../../README.md).
 
@@ -193,9 +193,9 @@ uvicorn rag_protection_proxy.app:app --host 0.0.0.0 --port 8090 --reload
 
 Open `http://localhost:8090/ui` and `http://localhost:8090/health`. Expect `"enterprise_installed": false`.
 
-Host `RAG_LLM_BASE_URL` must be reachable from your laptop (typically `http://localhost:12434/engines/v1` when Model Runner TCP is enabled). Do not use `model-runner.docker.internal` unless the process is inside Compose.
+Host `RAG_LLM_BASE_URL` must be reachable from your laptop (typically `http://localhost:12434/engines/v1` when Model Runner TCP is enabled). Do not use `model-runner.docker.internal` unless the process is inside Compose. TCP is a Desktop **Settings → AI** checkbox — [LLM_BACKENDS.md — Docker Desktop](LLM_BACKENDS.md#docker-desktop-standard-ce-setup).
 
-Any OpenAI-compatible chat endpoint works (`RAG_LLM_BASE_URL`, `RAG_LLM_MODEL`, `RAG_LLM_API_KEY`). Copy [`.env.example`](../README.md) to `.env` for Docker. Host uvicorn reads the `export`s above (and `config/*.yaml`); it does not require `.env` unless you source it yourself.
+Any OpenAI-compatible chat endpoint works (`RAG_LLM_BASE_URL`, `RAG_LLM_MODEL`, `RAG_LLM_API_KEY`). Copy [`.env.example`](../README.md) to `.env` for Docker. Host uvicorn reads the `export`s above (and `config/*.yaml`); it does not require `.env` unless you source it yourself. URLs, Model Runner vs `compose.ci.yml`, and typical Ollama values: [LLM_BACKENDS.md](LLM_BACKENDS.md).
 
 **Compose without Model Runner:** `compose.yml` needs the Docker Model plugin. If you are on Docker Engine / Colima, start with `docker compose -f compose.ci.yml up -d --build --wait` and set `RAG_LLM_BASE_URL` in `.env`. Inside that container, `localhost` is the proxy — use `host.docker.internal` for an LLM on the host.
 
@@ -249,7 +249,7 @@ source .venv/bin/activate
 | Tests pass, `:8090` still looks like EE | Host venv and Docker are independent. Rebuild/start the **CE** Compose stack or run uvicorn from this venv. |
 | Integrated terminal has no `(.venv)` | Activate manually; pick the interpreter; open a **new** terminal. |
 | `uvicorn` cannot find `config/policy.yaml` | `cd rag-protection-proxy` first. |
-| `'models' support requires Docker Model plugin` | Enable Model Runner in Docker Desktop, or use `compose.ci.yml` + `RAG_LLM_BASE_URL` (root README). |
+| `'models' support requires Docker Model plugin` | Enable Model Runner in Docker Desktop, or use `compose.ci.yml` + `RAG_LLM_BASE_URL` — [LLM_BACKENDS.md](LLM_BACKENDS.md). |
 
 ---
 
@@ -257,6 +257,7 @@ source .venv/bin/activate
 
 | Document | Contents |
 |----------|----------|
+| [LLM_BACKENDS.md](LLM_BACKENDS.md) | Model Runner, `compose.ci.yml`, BYO OpenAI-compatible URL |
 | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) | Change, test, and release CE |
 | [CE_EE_BUILD_RUN_DEBUG.md](../../product/CE_EE_BUILD_RUN_DEBUG.md) | Host vs Docker vs Helm |
 | [TECH_STACK.md](../../product/TECH_STACK.md) | Why these libraries |

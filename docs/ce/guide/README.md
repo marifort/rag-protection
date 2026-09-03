@@ -5,6 +5,7 @@
 | Guide | File |
 |-------|------|
 | **Local Python venv (install)** | [LOCAL_SETUP.md](LOCAL_SETUP.md) |
+| **LLM backends (Model Runner / BYO)** | [LLM_BACKENDS.md](LLM_BACKENDS.md) — Desktop **Settings → AI**, Compose `models:`, host URL |
 | **Admin (operator home)** | [ADMIN_GUIDE.md](ADMIN_GUIDE.md) |
 | Admin settings + pytest matrix | [ADMIN_SETTINGS_AND_TESTS.md](ADMIN_SETTINGS_AND_TESTS.md) |
 | Developer | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) |

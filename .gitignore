@@ -26,6 +26,10 @@ docs/commercial/internal/RESUME_*.md
 # Founder local — personal career outreach (rates, availability). Never push.
 docs/commercial/internal/CAREER_*.md
 
+# Local convenience symlink so docs/… links in the exported README template
+# resolve in Cursor. Not repo content; it would double every docs path.
+edition/templates/docs
+
 # Accidental / local artifacts — not either edition
 /node_modules/
 .cursor/debug-*.log

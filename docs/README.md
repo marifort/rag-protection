@@ -11,8 +11,9 @@ This is the **public MIT** documentation set for **Marifort Gate** (Marifort Sys
 | **Architecture** | [shared/architecture.md](shared/architecture.md) |
 | **Hands-on tutorials** | [ce/tutorials/](ce/tutorials/README.md) |
 | **Local Python venv** | [ce/guide/LOCAL_SETUP.md](ce/guide/LOCAL_SETUP.md) |
+| **LLM backends (Model Runner / BYO)** | [ce/guide/LLM_BACKENDS.md](ce/guide/LLM_BACKENDS.md) |
 | **Admin / developer guides** | [ce/guide/](ce/guide/README.md) |
-| **Build and run** | [product/CE_EE_BUILD_RUN_DEBUG.md](product/CE_EE_BUILD_RUN_DEBUG.md) · [product/DEV_WORKFLOW_QUICK.md](product/DEV_WORKFLOW_QUICK.md) |
+| **Build and run** | [product/CE_EE_BUILD_RUN_DEBUG.md](product/CE_EE_BUILD_RUN_DEBUG.md) |
 | **Enterprise Edition** | [ENTERPRISE.md](../ENTERPRISE.md) |
 
 ## Layout in this repository

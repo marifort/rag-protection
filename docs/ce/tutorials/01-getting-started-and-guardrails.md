@@ -7,9 +7,9 @@ Learn the RAG Protection Proxy by running it locally and exercising each securit
 - Seen ACL, DLP, injection shielding, and citation auditing in action
 - Used the operator console, ingest API, and audit log
 
-**Time:** ~45-60 minutes · **Level:** beginner · **Prerequisites:** Docker Desktop 4.40+ with [Docker Model Runner](https://docs.docker.com/ai/model-runner/) enabled (**Settings → AI → Enable Docker Model Runner**)
+**Time:** ~45-60 minutes · **Level:** beginner · **Prerequisites:** Docker Desktop 4.40+ with [Docker Model Runner](https://docs.docker.com/ai/model-runner/) enabled (**Settings → AI → Enable Docker Model Runner**). No Desktop / BYO LLM: [LLM_BACKENDS.md](../guide/LLM_BACKENDS.md).
 
-**Related docs:** [../ARCHITECTURE.md](../README.md) · [../ADMIN_GUIDE.md](../../ce/guide/ADMIN_GUIDE.md) · [../../guardrails/README.md](../../ce/security/README.md) · **Card:** [features/01-acl-pipeline.md](../features/01-acl-pipeline.md)
+**Related docs:** [LLM backends](../guide/LLM_BACKENDS.md) · [../ARCHITECTURE.md](../README.md) · [../ADMIN_GUIDE.md](../../ce/guide/ADMIN_GUIDE.md) · [../../guardrails/README.md](../../ce/security/README.md) · **Card:** [features/01-acl-pipeline.md](../features/01-acl-pipeline.md)
 
 > **Lab / A aliases:** none for this tutorial — product ID is **#1**.
 

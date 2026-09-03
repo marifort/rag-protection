@@ -211,7 +211,7 @@ POST {RAG_LLM_BASE_URL}/chat/completions
 }
 ```
 
-Default backend: [Docker Model Runner](https://docs.docker.com/ai/model-runner/) (`compose.yml`). Any OpenAI-compatible URL works via `RAG_LLM_BASE_URL`.
+Default backend: [Docker Model Runner](https://docs.docker.com/ai/model-runner/) (`compose.yml`). Any OpenAI-compatible URL works via `RAG_LLM_BASE_URL`. Laptop paths (Desktop vs `compose.ci.yml`, typical Ollama URLs): [LLM_BACKENDS.md](../ce/guide/LLM_BACKENDS.md).
 
 ### Docker Model Runner baseline (no external LLM subscription)
 
@@ -244,7 +244,7 @@ services:
 |-------------|-------|
 | Docker Desktop **4.40+** | Model Runner enabled (Settings → AI) |
 | First-time model pull | Network to download `ai/gemma3-qat` once; inference stays local |
-| Host resources | Sufficient CPU/RAM for local inference — fine for demos/POC |
+| Host resources | About **16 GB RAM** is the realistic demo floor (Desktop + first model load). See [LLM_BACKENDS.md](../ce/guide/LLM_BACKENDS.md). |
 
 ### What works without a paid LLM API
 

@@ -3,6 +3,7 @@
 # Prerequisites:
 #   Docker Desktop 4.40+ with Model Runner enabled
 #   (Settings → AI → Enable Docker Model Runner)
+#   Backends / no plugin: docs/ce/guide/LLM_BACKENDS.md
 #
 # Start:
 #   bash tools/docker_start.sh

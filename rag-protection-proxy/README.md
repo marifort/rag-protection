@@ -120,7 +120,7 @@ Full admin walkthrough and test matrix: [../docs/product/ADMIN_GUIDE.md](../docs
 | `RAG_OIDC_UI_CLIENT_ID` | empty | EE Sign in with IdP — OAuth client id |
 | `RAG_OIDC_UI_CLIENT_SECRET` | empty | EE Sign in with IdP — client secret (prefer env over YAML) |
 | `RAG_OIDC_UI_REDIRECT_URI` | empty | EE callback, e.g. `http://localhost:8090/admin/auth/oidc/login/callback` |
-| `RAG_LLM_BASE_URL` | Model Runner URL | OpenAI-compatible base URL |
+| `RAG_LLM_BASE_URL` | Model Runner URL | OpenAI-compatible base URL — [LLM backends](../docs/ce/guide/LLM_BACKENDS.md) |
 | `RAG_LLM_MODEL` | `ai/gemma3-qat` | Model name |
 | `RAG_ADMIN_API_KEY` | empty | Required for `/v1/ingest` when set |
 

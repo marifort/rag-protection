@@ -10,6 +10,7 @@
 # CI leaves RAG_LLM_* unset so the proxy fail-fasts to 127.0.0.1:9 (ACL/chunk
 # tests still run). For a local BYO LLM, set RAG_LLM_BASE_URL / RAG_LLM_MODEL
 # in .env (host LLM: host.docker.internal, not localhost).
+# Laptop paths: docs/ce/guide/LLM_BACKENDS.md
 
 name: rag-protection-ci
 
