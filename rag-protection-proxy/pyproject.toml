@@ -48,6 +48,7 @@ include = ["rag_protection_proxy*"]
 [tool.setuptools.package-data]
 rag_protection_proxy = [
   "ui/static/**/*",
+  "tools_gateway/obo/fixtures/*.json",
 ]
 
 [tool.pytest.ini_options]
@@ -57,4 +58,5 @@ pythonpath = ["."]
 markers = [
   "integration: in-process pipeline tests (SQLite vs vector backend)",
   "live: requires RUN_INTEGRATION=1 and a running compose stack",
+  "exercise: optional on-behalf-of checks — skipped unless RAG_OBO_EXERCISES=1",
 ]

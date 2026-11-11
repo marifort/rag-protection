@@ -26,4 +26,6 @@ regexes = [
   '''employee-demo''',
   '''hr-demo-token''',
   '''exec-demo-token''',
+  '''obo-lab-secret-not-for-production-use''',
+  '''test-obo-secret-not-for-prod-use''',
 ]

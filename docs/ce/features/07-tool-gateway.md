@@ -126,6 +126,8 @@ cd rag-protection-proxy && pytest tests/test_tools_gateway.py -q
 
 Full demo: [../demos/07-tool-gateway.md](../demos/07-tool-gateway.md).
 
+The allowlist on `POST /v1/tools/invoke` does not put the person on the downstream call. That check is the [on-behalf-of lab](../labs/obo-identity.md). It is not wired into the invoke API.
+
 ---
 
 ## Gaps & non-claims

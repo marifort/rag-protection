@@ -1,0 +1,31 @@
+{
+  "service_principals": [
+    {
+      "displayName": "Internal Copilot Agent",
+      "appId": "agent-app-client-id",
+      "oauth2PermissionGrants": [
+        {
+          "resource": "Microsoft Graph",
+          "scope": "User.Read Mail.Send Files.ReadWrite.All Sites.Read.All"
+        }
+      ],
+      "appRoleAssignments": [
+        {
+          "resource": "Microsoft Graph",
+          "role": "Files.ReadWrite.All"
+        }
+      ]
+    },
+    {
+      "displayName": "Least-privilege RAG helper",
+      "appId": "rag-helper-client-id",
+      "oauth2PermissionGrants": [
+        {
+          "resource": "Microsoft Graph",
+          "scope": "User.Read Files.Read"
+        }
+      ],
+      "appRoleAssignments": []
+    }
+  ]
+}

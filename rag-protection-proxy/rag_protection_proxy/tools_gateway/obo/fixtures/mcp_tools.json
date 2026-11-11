@@ -1,0 +1,24 @@
+{
+  "tools": [
+    {
+      "name": "read_wiki",
+      "identity_mode": "obo",
+      "required_scopes": ["Files.Read"]
+    },
+    {
+      "name": "send_email",
+      "identity_mode": "delegated",
+      "required_scopes": ["Mail.Send"]
+    },
+    {
+      "name": "run_sql",
+      "identity_mode": "obo",
+      "required_scopes": ["SQL.Read"]
+    },
+    {
+      "name": "search_web",
+      "identity_mode": "delegated",
+      "required_scopes": []
+    }
+  ]
+}

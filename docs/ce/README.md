@@ -69,6 +69,7 @@ Same `#N` appears in several places on purpose. Pick by **job**, not by filename
 | Technical catalog | [FEATURE_CATALOG.md](FEATURE_CATALOG.md) |
 | Feature teaching guides | [learn/](learn/README.md) |
 | 5-min demo scripts | [demos/](demos/) |
+| On-behalf-of lab (who SQL sees) | [labs/obo-identity.md](labs/obo-identity.md) |
 | Local Python venv | [guide/LOCAL_SETUP.md](guide/LOCAL_SETUP.md) |
 | Docker Model Runner / BYO LLM | [guide/LLM_BACKENDS.md](guide/LLM_BACKENDS.md) · root [README.md](../../README.md) |
 | Guides (dev / admin / user) | [guide/README.md](guide/README.md) |
